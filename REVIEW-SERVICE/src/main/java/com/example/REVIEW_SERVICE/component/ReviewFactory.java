@@ -19,9 +19,7 @@ public class ReviewFactory {
                 .paperId(paperId)
                 .reviewerId(reviewerId)
                 .assignedBy(assignedBy)
-
                 .status(ReviewStatus.PENDING_INVITATION)
-
                 .assignedAt(LocalDateTime.now())
 
                 .build();
