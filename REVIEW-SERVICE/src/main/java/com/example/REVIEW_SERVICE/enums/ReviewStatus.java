@@ -1,0 +1,11 @@
+package com.example.REVIEW_SERVICE.enums;
+
+public enum ReviewStatus {
+
+    PENDING_INVITATION,
+    INVITATION_ACCEPTED,
+    INVITATION_DECLINED,
+    IN_PROGRESS,
+    SUBMITTED,
+    CANCELLED
+}
