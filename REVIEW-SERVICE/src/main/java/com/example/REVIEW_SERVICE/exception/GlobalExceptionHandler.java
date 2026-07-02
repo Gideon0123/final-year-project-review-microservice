@@ -27,8 +27,16 @@ public class GlobalExceptionHandler {
         return buildResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED.value(), request);
     }
 
+    @ExceptionHandler(ReviewAuthorizationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleUnauthorizedReview(
+            ReviewAuthorizationException ex,
+            HttpServletRequest request
+    ) {
+        return buildResponse(ex.getMessage(), HttpStatus.FORBIDDEN.value(), request);
+    }
+
     @ExceptionHandler(InvalidReviewStateException.class)
-    public ResponseEntity<ApiResponse<Object>> handleDuplicateResources(
+    public ResponseEntity<ApiResponse<Object>> handleInvalidReview(
             InvalidReviewStateException ex,
             HttpServletRequest request
     ) {
@@ -36,7 +44,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicateReviewerAssignmentException.class)
-    public ResponseEntity<ApiResponse<Object>> handleIdempotencyConflict(
+    public ResponseEntity<ApiResponse<Object>> handleDuplicateReviewer(
             DuplicateReviewerAssignmentException ex,
             HttpServletRequest request
     ) {
@@ -44,7 +52,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MaximumReviewersReachedException.class)
-    public ResponseEntity<ApiResponse<Object>> handleRateLimitExceeded(
+    public ResponseEntity<ApiResponse<Object>> handleMaximumReviewersReached(
             MaximumReviewersReachedException ex,
             HttpServletRequest request
     ) {
@@ -54,6 +62,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleUserNotFound(
             UserNotFoundException ex,
+            HttpServletRequest request
+    ) {
+        return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value(), request);
+    }
+
+    @ExceptionHandler(ResearchPaperNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleResearchNotFound(
+            ResearchPaperNotFoundException ex,
             HttpServletRequest request
     ) {
         return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value(), request);
@@ -100,7 +116,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ReviewAlreadyCompletedException.class)
-    public ResponseEntity<ApiResponse<Object>> handleIdempotencyProcessing(
+    public ResponseEntity<ApiResponse<Object>> handleCompletedReview(
             ReviewAlreadyCompletedException ex,
             HttpServletRequest request
     ) {

@@ -8,8 +8,8 @@ import com.example.REVIEW_SERVICE.exception.DuplicateReviewerAssignmentException
 import com.example.REVIEW_SERVICE.exception.InvalidReviewStateException;
 import com.example.REVIEW_SERVICE.exception.MaximumReviewersReachedException;
 import com.example.REVIEW_SERVICE.exception.ReviewAlreadyCompletedException;
-import com.example.REVIEW_SERVICE.feign.ResearchServiceClient;
 import com.example.REVIEW_SERVICE.repository.ReviewRepository;
+import com.example.REVIEW_SERVICE.service.ResearchPaperLookupService;
 import com.example.REVIEW_SERVICE.service.ReviewValidationService;
 import com.example.REVIEW_SERVICE.utils.ReviewValidationConstants;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewValidationServiceImpl implements ReviewValidationService {
 
     private final ReviewRepository reviewRepository;
-    private final ResearchServiceClient researchServiceClient;
+    private final ResearchPaperLookupService researchPaperLookupService;
 
     @Override
     public void validateAssignment(
@@ -33,7 +33,7 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
         /*
          * Verify paper exists.
          */
-        PaperSummaryResponse paper = researchServiceClient.getPaperSummary(
+        PaperSummaryResponse paper = researchPaperLookupService.getPaperSummary(
                 paperId
         );
 

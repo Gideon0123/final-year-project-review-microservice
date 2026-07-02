@@ -4,11 +4,7 @@ import com.example.REVIEW_SERVICE.entity.Review;
 
 public interface ReviewAuthorizationService {
 
-    void verifyReviewer(
-            Review review,
-            Long currentUserId
-    );
-
+    void verifyReviewer(Review review);
     void verifyEditor();
 
 }
