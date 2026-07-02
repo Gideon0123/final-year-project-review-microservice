@@ -7,9 +7,6 @@ import java.time.LocalDateTime;
 public interface ReviewDeadlineService {
 
     LocalDateTime calculateDeadline();
-
-    boolean isExpired(
-            Review review
-    );
+    boolean isExpired(Review review);
 
 }
