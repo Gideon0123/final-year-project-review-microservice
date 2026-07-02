@@ -2,8 +2,7 @@ package com.example.REVIEW_SERVICE.service;
 
 import com.example.REVIEW_SERVICE.dto.AssignReviewerRequest;
 import com.example.REVIEW_SERVICE.dto.ReviewResponse;
-
-import java.util.List;
+import com.example.REVIEW_SERVICE.payload.PagedResponse;
 
 public interface ReviewService {
 
@@ -27,13 +26,18 @@ public interface ReviewService {
 
     ReviewResponse editorDecision(
             Long reviewId,
-            EditorDecisionRequest request
+            EditorialDecisionRequest request
     );
 
-    List<ReviewResponse> getAssignedReviews();
+    PagedResponse<ReviewSummaryResponse> getAssignedReviews(
+            int page,
+            int size
+    );
 
-    List<ReviewResponse> getPaperReviews(
-            Long paperId
+    PagedResponse<ReviewSummaryResponse> getPaperReviews(
+            Long paperId,
+            int page,
+            int size
     );
 
     ReviewResponse getReview(

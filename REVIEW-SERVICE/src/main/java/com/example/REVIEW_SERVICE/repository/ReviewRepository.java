@@ -9,12 +9,10 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ReviewRepository
-        extends JpaRepository<Review, Long>, JpaSpecificationExecutor<Review> {
+public interface ReviewRepository extends JpaRepository<Review, Long>, JpaSpecificationExecutor<Review> {
 
     boolean existsByPaperIdAndReviewerIdAndRevisionNumber(
             Long paperId,
@@ -33,22 +31,26 @@ public interface ReviewRepository
             Pageable pageable
     );
 
-    List<Review> findByPaperId(
-            Long paperId
-    );
-
-    List<Review> findByStatus(
-            ReviewStatus status
-    );
-
-    List<Review> findByDeadlineBeforeAndStatus(
-            LocalDateTime date,
-            ReviewStatus status
-    );
-
-    List<Review> findByPaperIdAndStatus(
+    Page<Review> findByPaperId(
             Long paperId,
-            ReviewStatus status
+            Pageable pageable
+    );
+
+    Page<Review> findByStatus(
+            ReviewStatus status,
+            Pageable pageable
+    );
+
+    Page<Review> findByDeadlineBeforeAndStatus(
+            LocalDateTime deadline,
+            ReviewStatus status,
+            Pageable pageable
+    );
+
+    Page<Review> findByPaperIdAndStatus(
+            Long paperId,
+            ReviewStatus status,
+            Pageable pageable
     );
 
     long countByReviewerId(
@@ -59,4 +61,9 @@ public interface ReviewRepository
             Long reviewerId,
             ReviewStatus status
     );
+
+    long countByPaperId(Long paperId);
+
+    boolean existsByPaperIdAndReviewerId(Long paperId, Long reviewerId);
+
 }

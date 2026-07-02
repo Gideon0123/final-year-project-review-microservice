@@ -1,7 +1,6 @@
 package com.example.REVIEW_SERVICE.dto;
 
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotNull;
+import com.example.REVIEW_SERVICE.enums.ReviewStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -11,16 +10,18 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssignReviewerRequest {
+public class ReviewSummaryResponse {
 
-    @NotNull
+    private Long id;
+
     private Long paperId;
 
-    @NotNull
     private Long reviewerId;
 
-    @NotNull
-    @Future
+    private Integer revisionNumber;
+
+    private ReviewStatus status;
+
     private LocalDateTime deadline;
 
 }

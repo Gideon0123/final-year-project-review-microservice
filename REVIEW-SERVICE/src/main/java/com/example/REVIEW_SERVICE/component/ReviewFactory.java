@@ -14,7 +14,6 @@ public class ReviewFactory {
             Long reviewerId,
             Long assignedBy
     ) {
-
         return Review.builder()
                 .paperId(paperId)
                 .reviewerId(reviewerId)

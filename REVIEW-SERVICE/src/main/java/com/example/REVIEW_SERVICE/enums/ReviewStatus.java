@@ -7,5 +7,6 @@ public enum ReviewStatus {
     INVITATION_DECLINED,
     IN_PROGRESS,
     SUBMITTED,
-    CANCELLED
+    CANCELLED,
+    COMPLETED,
 }
