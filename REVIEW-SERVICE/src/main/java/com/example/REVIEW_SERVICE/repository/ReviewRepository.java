@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
@@ -60,6 +61,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, JpaSpecif
     long countByReviewerIdAndStatus(
             Long reviewerId,
             ReviewStatus status
+    );
+
+    long countByReviewerIdAndStatusIn(
+            Long reviewerId,
+            Collection<ReviewStatus> statuses
     );
 
     long countByPaperId(Long paperId);
