@@ -110,6 +110,8 @@ public class Review {
 
     private LocalDateTime acceptedAt;
 
+    private LocalDateTime assignedAt;
+
     private LocalDateTime declinedAt;
 
     private LocalDateTime submittedAt;
