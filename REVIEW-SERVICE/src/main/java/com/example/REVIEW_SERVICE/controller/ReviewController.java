@@ -57,18 +57,17 @@ public class ReviewController {
     ) {
         ReviewResponse response = reviewService.acceptInvitation(reviewId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        ApiResponse.<ReviewResponse>builder()
-                                .success(true)
-                                .message("Review Accepted.")
-                                .status(HttpStatus.OK.value())
-                                .data(response)
-                                .path(httpRequest.getRequestURI())
-                                .traceId(TraceIdUtil.generate())
-                                .timestamp(LocalDateTime.now())
-                                .build()
-                );
+        return ResponseEntity.ok(
+                ApiResponse.<ReviewResponse>builder()
+                        .success(true)
+                        .message("Review Invitation Accepted Successfully.")
+                        .status(HttpStatus.OK.value())
+                        .data(response)
+                        .path(httpRequest.getRequestURI())
+                        .traceId(TraceIdUtil.generate())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
     }
 
     @PreAuthorize("hasRole('REVIEWER')")
@@ -80,18 +79,17 @@ public class ReviewController {
     ) {
         ReviewResponse response = reviewService.declineInvitation(reviewId, request);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        ApiResponse.<ReviewResponse>builder()
-                                .success(true)
-                                .message("Review Declined.")
-                                .status(HttpStatus.OK.value())
-                                .data(response)
-                                .path(httpRequest.getRequestURI())
-                                .traceId(TraceIdUtil.generate())
-                                .timestamp(LocalDateTime.now())
-                                .build()
-                );
+        return ResponseEntity.ok(
+                ApiResponse.<ReviewResponse>builder()
+                        .success(true)
+                        .message("Review Invitation Declined Successfully.")
+                        .status(HttpStatus.OK.value())
+                        .data(response)
+                        .path(httpRequest.getRequestURI())
+                        .traceId(TraceIdUtil.generate())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
     }
 
     @PreAuthorize("hasRole('REVIEWER')")
@@ -103,18 +101,17 @@ public class ReviewController {
     ) {
         ReviewResponse response = reviewService.submitReview(reviewId, request);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        ApiResponse.<ReviewResponse>builder()
-                                .success(true)
-                                .message("Review Submitted.")
-                                .status(HttpStatus.OK.value())
-                                .data(response)
-                                .path(httpRequest.getRequestURI())
-                                .traceId(TraceIdUtil.generate())
-                                .timestamp(LocalDateTime.now())
-                                .build()
-                );
+        return ResponseEntity.ok(
+                ApiResponse.<ReviewResponse>builder()
+                        .success(true)
+                        .message("Review Submitted Successfully.")
+                        .status(HttpStatus.OK.value())
+                        .data(response)
+                        .path(httpRequest.getRequestURI())
+                        .traceId(TraceIdUtil.generate())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -126,18 +123,17 @@ public class ReviewController {
     ) {
         ReviewResponse response = reviewService.editorDecision(reviewId, request);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        ApiResponse.<ReviewResponse>builder()
-                                .success(true)
-                                .message("Editorial Decision.")
-                                .status(HttpStatus.OK.value())
-                                .data(response)
-                                .path(httpRequest.getRequestURI())
-                                .traceId(TraceIdUtil.generate())
-                                .timestamp(LocalDateTime.now())
-                                .build()
-                );
+        return ResponseEntity.ok(
+                ApiResponse.<ReviewResponse>builder()
+                        .success(true)
+                        .message("Editorial Decision Recorded Successfully.")
+                        .status(HttpStatus.OK.value())
+                        .data(response)
+                        .path(httpRequest.getRequestURI())
+                        .traceId(TraceIdUtil.generate())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
     }
 
     @PreAuthorize("hasRole('REVIEWER')")
@@ -183,7 +179,7 @@ public class ReviewController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/paper/{paperId}")
+    @GetMapping("/papers/{paperId}")
     public ResponseEntity<ApiResponse<PagedResponse<ReviewSummaryResponse>>> getPaperReviews(
             @PathVariable long paperId,
             @RequestParam(defaultValue = "0") int page,
@@ -233,20 +229,20 @@ public class ReviewController {
     ) {
         ReviewResponse response = reviewService.getReview(reviewId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        ApiResponse.<ReviewResponse>builder()
-                                .success(true)
-                                .message("Review Fetched.")
-                                .status(HttpStatus.OK.value())
-                                .data(response)
-                                .path(httpRequest.getRequestURI())
-                                .traceId(TraceIdUtil.generate())
-                                .timestamp(LocalDateTime.now())
-                                .build()
-                );
+        return ResponseEntity.ok(
+                ApiResponse.<ReviewResponse>builder()
+                        .success(true)
+                        .message("Review Fetched Successfully.")
+                        .status(HttpStatus.OK.value())
+                        .data(response)
+                        .path(httpRequest.getRequestURI())
+                        .traceId(TraceIdUtil.generate())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
     }
 
+//    @PreAuthorize("hasAnyRole('EDITOR','REVIEWER','ADMIN')")
     @GetMapping("/me/statistics")
     public ResponseEntity<ApiResponse<ReviewStatisticsResponse>> getStatistics(
             HttpServletRequest request

@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -63,9 +65,17 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, JpaSpecif
             ReviewStatus status
     );
 
+    @Query("""
+    SELECT COUNT(r)
+    FROM Review r
+    WHERE r.reviewerId = :reviewerId
+      AND r.deadline < :now
+      AND r.status <> com.example.REVIEW_SERVICE.enums.ReviewStatus.COMPLETED
+      AND r.status <> com.example.REVIEW_SERVICE.enums.ReviewStatus.INVITATION_DECLINED
+""")
     long countOverdueReviews(
-            Long reviewerId,
-            LocalDateTime deadline
+            @Param("reviewerId") Long reviewerId,
+            @Param("now") LocalDateTime now
     );
 
     long countByReviewerIdAndStatusIn(

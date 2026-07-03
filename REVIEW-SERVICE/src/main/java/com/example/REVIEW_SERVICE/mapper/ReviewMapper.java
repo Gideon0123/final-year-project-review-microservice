@@ -1,7 +1,6 @@
 package com.example.REVIEW_SERVICE.mapper;
 
 import com.example.REVIEW_SERVICE.dto.ReviewResponse;
-import com.example.REVIEW_SERVICE.dto.ReviewSummaryResponse;
 import com.example.REVIEW_SERVICE.entity.Review;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;

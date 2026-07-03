@@ -222,6 +222,10 @@ public class ReviewServiceImpl implements ReviewService {
             return blindReviewService.maskForAuthor(review);
         }
 
+        if (user.getRole().equals("EDITOR")) {
+            authorizationService.verifyEditor();
+        }
+
         if (user.getRole().equals("REVIEWER")) {
             authorizationService.verifyReviewer(
                     review
