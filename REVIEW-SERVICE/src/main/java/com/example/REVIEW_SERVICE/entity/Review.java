@@ -1,5 +1,6 @@
 package com.example.REVIEW_SERVICE.entity;
 
+import com.example.REVIEW_SERVICE.enums.EditorialDecision;
 import com.example.REVIEW_SERVICE.enums.ReviewRecommendation;
 import com.example.REVIEW_SERVICE.enums.ReviewScore;
 import com.example.REVIEW_SERVICE.enums.ReviewStatus;
@@ -83,6 +84,9 @@ public class Review {
     @Enumerated(EnumType.STRING)
     private ReviewScore overallScore;
 
+    @Enumerated(EnumType.STRING)
+    private EditorialDecision decision;
+
     /**
      * Visible to the author.
      */
@@ -103,8 +107,13 @@ public class Review {
     @Column(name = "attachment_url")
     private String attachmentUrl;
 
+    private String declineReason;
+
     @Column(nullable = false)
     private LocalDateTime deadline;
+
+    @Column(nullable = false)
+    private Integer reviewRound;
 
     private LocalDateTime invitationSentAt;
 
@@ -115,6 +124,8 @@ public class Review {
     private LocalDateTime declinedAt;
 
     private LocalDateTime submittedAt;
+
+    private LocalDateTime decisionAt;
 
     @CreatedDate
     @Column(

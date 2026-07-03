@@ -1,8 +1,9 @@
-package com.example.REVIEW_SERVICE.service;
+package com.example.REVIEW_SERVICE.service.Impl;
 
 import com.example.REVIEW_SERVICE.dto.ReviewResponse;
 import com.example.REVIEW_SERVICE.entity.Review;
 import com.example.REVIEW_SERVICE.mapper.ReviewMapper;
+import com.example.REVIEW_SERVICE.service.BlindReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,7 @@ public class BlindReviewServiceImpl implements BlindReviewService {
     ) {
         ReviewResponse response = reviewMapper.toResponse(review);
 
-//        response.setAuthorId(null);
+        //        response.setAuthorId(null);
         response.setReviewerId(null);
 
         return response;

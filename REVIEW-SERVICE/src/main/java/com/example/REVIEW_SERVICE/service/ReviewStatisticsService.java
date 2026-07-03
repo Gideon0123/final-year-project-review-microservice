@@ -1,8 +1,11 @@
 package com.example.REVIEW_SERVICE.service;
 
+import com.example.REVIEW_SERVICE.dto.ReviewStatisticsResponse;
+
 public interface ReviewStatisticsService {
 
-    long pendingReviews(Long reviewerId);
-    long completedReviews(Long reviewerId);
+    ReviewStatisticsResponse getReviewerStatistics(
+            Long reviewerId
+    );
 
 }

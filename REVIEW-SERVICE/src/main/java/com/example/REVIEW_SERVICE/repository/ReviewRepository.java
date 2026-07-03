@@ -63,6 +63,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, JpaSpecif
             ReviewStatus status
     );
 
+    long countOverdueReviews(
+            Long reviewerId,
+            LocalDateTime deadline
+    );
+
     long countByReviewerIdAndStatusIn(
             Long reviewerId,
             Collection<ReviewStatus> statuses
