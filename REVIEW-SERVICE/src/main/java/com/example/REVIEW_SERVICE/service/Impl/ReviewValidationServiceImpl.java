@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,6 +25,32 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
     private final ReviewRepository reviewRepository;
     private final ResearchPaperLookupService researchPaperLookupService;
     private final AuthLookupService authLookupService;
+    private static final Set<ReviewStatus> ACTIVE_REVIEW_STATUSES =
+            Set.of(
+                    ReviewStatus.PENDING_INVITATION,
+                    ReviewStatus.INVITATION_ACCEPTED,
+                    ReviewStatus.IN_PROGRESS
+            );
+
+    private void validateReviewerWorkload(
+            Long reviewerId
+    ) {
+
+        long activeReviews =
+                reviewRepository.countByReviewerIdAndStatusIn(
+                        reviewerId,
+                        ACTIVE_REVIEW_STATUSES
+                );
+
+        if (activeReviews >= ReviewValidationConstants.MAX_ACTIVE_REVIEWS) {
+
+            throw new ReviewerNotEligibleException(
+                    "Reviewer has reached the maximum active review workload."
+            );
+
+        }
+
+    }
 
     private void validateReviewerEligibility(
             ReviewerSummaryResponse reviewer
@@ -71,6 +99,16 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
         );
 
         validateReviewerEligibility(reviewer);
+
+        if (paper.getAuthorId().equals(reviewerId)) {
+
+            throw new ReviewerNotEligibleException(
+                    "Authors cannot review their own papers."
+            );
+
+        }
+
+        validateReviewerWorkload(reviewerId);
 
         /*
          * Paper must be submitted.
