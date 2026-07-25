@@ -35,12 +35,12 @@ public class ReviewController {
     ) {
         ReviewResponse response = reviewService.assignReviewer(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(
                         ApiResponse.<ReviewResponse>builder()
                                 .success(true)
                                 .message("Reviewer assigned successfully.")
-                                .status(HttpStatus.CREATED.value())
+                                .status(HttpStatus.OK.value())
                                 .data(response)
                                 .path(httpRequest.getRequestURI())
                                 .traceId(TraceIdUtil.generate())

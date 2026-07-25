@@ -31,7 +31,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewValidationService validationService;
     private final ReviewAuthorizationService authorizationService;
     private final ReviewDeadlineService deadlineService;
-    private final ReviewStatisticsService statisticsService;
+//    private final ReviewStatisticsService statisticsService;
     private final ResearchPaperLookupService paperLookupService;
 
     private ReviewSummaryResponse toSummary(
@@ -74,13 +74,17 @@ public class ReviewServiceImpl implements ReviewService {
                 request.getReviewerId()
         );
 
-        paperLookupService.getPaperSummary(request.getPaperId());
+        PaperSummaryResponse paper = paperLookupService.getPaperSummary(request.getPaperId());
         Review review = Review.builder()
                 .paperId(request.getPaperId())
                 .reviewerId(request.getReviewerId())
                 .status(ReviewStatus.PENDING_INVITATION)
                 .deadline(deadlineService.calculateDeadline())
                 .reviewRound(1)
+
+                .revisionNumber(paper.getRevisionNumber())
+                .assignedBy(currentUserService.getCurrentUser().getId())
+                .assignedAt(LocalDateTime.now())
                 .createdAt(LocalDateTime.now())
                 .build();
 

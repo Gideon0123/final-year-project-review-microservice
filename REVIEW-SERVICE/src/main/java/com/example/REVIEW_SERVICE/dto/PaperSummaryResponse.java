@@ -11,13 +11,9 @@ import lombok.*;
 public class PaperSummaryResponse {
 
     private Long id;
-
     private Long authorId;
-
     private String title;
-
     private ResearchStatus status;
-
     private Integer revisionNumber;
 
 }
