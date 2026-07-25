@@ -123,6 +123,14 @@ public class GlobalExceptionHandler {
         return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), request);
     }
 
+    @ExceptionHandler(ReviewerNotEligibleException.class)
+    public ResponseEntity<ApiResponse<Object>> handleIneligibleReviewer(
+            ReviewerNotEligibleException ex,
+            HttpServletRequest request
+    ) {
+        return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), request);
+    }
+
     @ExceptionHandler(ReviewAlreadyCompletedException.class)
     public ResponseEntity<ApiResponse<Object>> handleCompletedReview(
             ReviewAlreadyCompletedException ex,

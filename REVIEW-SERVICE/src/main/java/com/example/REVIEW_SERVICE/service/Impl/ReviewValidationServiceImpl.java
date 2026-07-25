@@ -1,14 +1,13 @@
 package com.example.REVIEW_SERVICE.service.Impl;
 
 import com.example.REVIEW_SERVICE.dto.PaperSummaryResponse;
+import com.example.REVIEW_SERVICE.dto.ReviewerSummaryResponse;
 import com.example.REVIEW_SERVICE.entity.Review;
 import com.example.REVIEW_SERVICE.enums.ResearchStatus;
 import com.example.REVIEW_SERVICE.enums.ReviewStatus;
-import com.example.REVIEW_SERVICE.exception.DuplicateReviewerAssignmentException;
-import com.example.REVIEW_SERVICE.exception.InvalidReviewStateException;
-import com.example.REVIEW_SERVICE.exception.MaximumReviewersReachedException;
-import com.example.REVIEW_SERVICE.exception.ReviewAlreadyCompletedException;
+import com.example.REVIEW_SERVICE.exception.*;
 import com.example.REVIEW_SERVICE.repository.ReviewRepository;
+import com.example.REVIEW_SERVICE.service.AuthLookupService;
 import com.example.REVIEW_SERVICE.service.ResearchPaperLookupService;
 import com.example.REVIEW_SERVICE.service.ReviewValidationService;
 import com.example.REVIEW_SERVICE.utils.ReviewValidationConstants;
@@ -23,6 +22,36 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
 
     private final ReviewRepository reviewRepository;
     private final ResearchPaperLookupService researchPaperLookupService;
+    private final AuthLookupService authLookupService;
+
+    private void validateReviewerEligibility(
+            ReviewerSummaryResponse reviewer
+    ) {
+
+        if (!reviewer.isEnabled()) {
+            throw new ReviewerNotEligibleException(
+                    "Reviewer account is disabled."
+            );
+        }
+
+        if (!reviewer.isEmailVerified()) {
+            throw new ReviewerNotEligibleException(
+                    "Reviewer email has not been verified."
+            );
+        }
+
+        if (!reviewer.isAccountNonLocked()) {
+            throw new ReviewerNotEligibleException(
+                    "Reviewer account is locked."
+            );
+        }
+
+        if (!"REVIEWER".equalsIgnoreCase(reviewer.getRole())) {
+            throw new ReviewerNotEligibleException(
+                    "Selected user is not a reviewer."
+            );
+        }
+    }
 
     @Override
     public void validateAssignment(
@@ -36,6 +65,12 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
         PaperSummaryResponse paper = researchPaperLookupService.getPaperSummary(
                 paperId
         );
+
+        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(
+                reviewerId
+        );
+
+        validateReviewerEligibility(reviewer);
 
         /*
          * Paper must be submitted.
