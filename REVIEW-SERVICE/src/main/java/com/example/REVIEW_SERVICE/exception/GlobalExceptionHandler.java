@@ -67,6 +67,14 @@ public class GlobalExceptionHandler {
         return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value(), request);
     }
 
+    @ExceptionHandler(ReviewerNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleReviewerNotFound(
+            ReviewerNotFoundException ex,
+            HttpServletRequest request
+    ) {
+        return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value(), request);
+    }
+
     @ExceptionHandler(ResearchPaperNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleResearchNotFound(
             ResearchPaperNotFoundException ex,

@@ -26,13 +26,10 @@ public class ResearchPaperLookupServiceImpl implements ResearchPaperLookupServic
                 researchServiceClient.getPaperSummary(paperId);
 
         if (response == null || !response.isSuccess() || response.getData() == null) {
-
             throw new ResearchPaperNotFoundException("Research paper not found.");
-
         }
 
         return response.getData();
-
     }
 
 }

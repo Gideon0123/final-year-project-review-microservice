@@ -46,7 +46,6 @@ public class ReviewAuthorizationServiceImpl implements ReviewAuthorizationServic
             throw new ReviewAuthorizationException(
                     "Only editors may perform this operation."
             );
-
         }
 
     }
