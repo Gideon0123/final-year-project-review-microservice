@@ -184,7 +184,11 @@ public class ReviewServiceImpl implements ReviewService {
                 pageable
         );
 
-        Page<ReviewSummaryResponse> content = reviews.map(this::toSummary);
+        CurrentUser currentUser = currentUserService.getCurrentUser();
+
+        Page<ReviewSummaryResponse> content = reviews.map(review ->
+                blindReviewService.maskSummary(toSummary(review), currentUser)
+        );
         return new PagedResponse<>(content);
     }
 
@@ -211,7 +215,14 @@ public class ReviewServiceImpl implements ReviewService {
                 pageable
         );
 
-        Page<ReviewSummaryResponse> content = reviews.map(this::toSummary);
+        CurrentUser currentUser = currentUserService.getCurrentUser();
+
+        Page<ReviewSummaryResponse> content = reviews.map(review ->
+                blindReviewService.maskSummary(
+                        toSummary(review),
+                        currentUser
+                )
+        );
 
         return new PagedResponse<>(content);
     }
@@ -224,24 +235,14 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = lookupService.getReviewById(reviewId);
         CurrentUser user = currentUserService.getCurrentUser();
 
-        if (user.getRole().equals("AUTHOR")) {
-            return blindReviewService.maskForAuthor(review);
-        }
-
-        if (user.getRole().equals("EDITOR")) {
+        if ("EDITOR".equals(user.getRole())) {
             authorizationService.verifyEditor();
         }
 
-        if (user.getRole().equals("REVIEWER")) {
-            authorizationService.verifyReviewer(
-                    review
-            );
-
-            return blindReviewService.maskForReviewer(
-                    review
-            );
+        if ("REVIEWER".equals(user.getRole())) {
+            authorizationService.verifyReviewer(review);
         }
 
-        return reviewMapper.toResponse(review);
+        return blindReviewService.maskReview(review, user);
     }
 }

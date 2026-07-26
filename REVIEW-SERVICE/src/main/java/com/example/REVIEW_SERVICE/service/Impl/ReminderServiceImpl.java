@@ -18,14 +18,12 @@ public class ReminderServiceImpl implements ReminderService {
     public void sendDeadlineReminder(
             Review review
     ) {
-
-        ReviewReminderEvent event =
-                ReviewReminderEvent.builder()
-                        .reviewId(review.getId())
-                        .reviewerId(review.getReviewerId())
-                        .paperId(review.getPaperId())
-                        .deadline(review.getDeadline())
-                        .build();
+        ReviewReminderEvent event = ReviewReminderEvent.builder()
+                .reviewId(review.getId())
+                .reviewerId(review.getReviewerId())
+                .paperId(review.getPaperId())
+                .deadline(review.getDeadline())
+                .build();
 
         rabbitTemplate.convertAndSend(
                 RabbitMQConstants.REVIEW_EXCHANGE,

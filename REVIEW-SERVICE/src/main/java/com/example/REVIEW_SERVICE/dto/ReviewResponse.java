@@ -15,29 +15,17 @@ import java.time.LocalDateTime;
 public class ReviewResponse {
 
     private Long id;
-
     private Long paperId;
-
     private Long reviewerId;
-
     private Integer revisionNumber;
-
     private ReviewStatus status;
-
     private ReviewRecommendation recommendation;
-
     private boolean overdue;
-
     private long daysRemaining;
-
     private ReviewScore overallScore;
-
     private String commentsForAuthor;
-
     private String commentsForEditor;
-
     private LocalDateTime deadline;
-
     private LocalDateTime submittedAt;
 
 }
