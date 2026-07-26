@@ -1,7 +1,9 @@
 package com.example.REVIEW_SERVICE.mapper;
 
+import com.example.REVIEW_SERVICE.dto.ReviewDecisionHistoryResponse;
 import com.example.REVIEW_SERVICE.dto.ReviewResponse;
 import com.example.REVIEW_SERVICE.entity.Review;
+import com.example.REVIEW_SERVICE.entity.ReviewDecisionHistory;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -28,5 +30,9 @@ public interface ReviewMapper {
             expression = "java(review.getAttachmentUrl() != null)"
     )
     ReviewResponse toResponse(Review review);
+
+    ReviewDecisionHistoryResponse toDecisionHistoryResponse(
+            ReviewDecisionHistory history
+    );
 
 }

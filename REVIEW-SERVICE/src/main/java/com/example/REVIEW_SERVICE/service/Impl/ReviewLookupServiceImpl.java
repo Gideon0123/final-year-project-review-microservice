@@ -1,11 +1,10 @@
 package com.example.REVIEW_SERVICE.service.Impl;
 
-import com.example.REVIEW_SERVICE.dto.ReviewResponse;
 import com.example.REVIEW_SERVICE.entity.Review;
+import com.example.REVIEW_SERVICE.entity.ReviewDecisionHistory;
 import com.example.REVIEW_SERVICE.exception.ReviewNotFoundException;
-import com.example.REVIEW_SERVICE.mapper.ReviewMapper;
+import com.example.REVIEW_SERVICE.repository.ReviewDecisionHistoryRepository;
 import com.example.REVIEW_SERVICE.repository.ReviewRepository;
-import com.example.REVIEW_SERVICE.service.BlindReviewService;
 import com.example.REVIEW_SERVICE.service.ReviewLookupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,12 +12,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ReviewLookupServiceImpl implements ReviewLookupService {
 
     private final ReviewRepository reviewRepository;
+    private final ReviewDecisionHistoryRepository decisionHistoryRepository;
 
     @Override
     public Review getReviewById(
@@ -54,6 +56,16 @@ public class ReviewLookupServiceImpl implements ReviewLookupService {
                 reviewerId,
                 pageable
         );
+    }
+
+    @Override
+    public List<ReviewDecisionHistory> getDecisionHistory(
+            Long reviewId
+    ) {
+
+        return decisionHistoryRepository
+                .findByReviewIdOrderByDecidedAtDesc(reviewId);
+
     }
 
 }
