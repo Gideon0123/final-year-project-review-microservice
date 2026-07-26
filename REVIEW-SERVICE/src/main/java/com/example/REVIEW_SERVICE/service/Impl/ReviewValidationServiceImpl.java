@@ -32,6 +32,7 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
                     ReviewStatus.IN_PROGRESS
             );
 
+
     private void validateReviewerWorkload(
             Long reviewerId
     ) {
@@ -172,6 +173,30 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
         if (review.getStatus() != ReviewStatus.COMPLETED) {
             throw new InvalidReviewStateException(
                     "Editorial decision can only be made after review completion."
+            );
+        }
+    }
+
+    @Override
+    public void validateInvitationAcceptance(
+            Review review
+    ) {
+        if (review.getStatus() != ReviewStatus.PENDING_INVITATION) {
+
+            throw new InvalidReviewStateException(
+                    "Review invitation is no longer available."
+            );
+        }
+    }
+
+    @Override
+    public void validateInvitationDecline(
+            Review review
+    ) {
+        if (review.getStatus() != ReviewStatus.PENDING_INVITATION) {
+
+            throw new InvalidReviewStateException(
+                    "Review invitation is no longer available."
             );
         }
     }

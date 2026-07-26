@@ -7,4 +7,6 @@ public interface ReviewValidationService {
     void validateAssignment(Long paperId, Long reviewerId);
     void validateSubmission(Review review);
     void validateDecision(Review review);
+    void validateInvitationAcceptance(Review review);
+    void validateInvitationDecline(Review review);
 }

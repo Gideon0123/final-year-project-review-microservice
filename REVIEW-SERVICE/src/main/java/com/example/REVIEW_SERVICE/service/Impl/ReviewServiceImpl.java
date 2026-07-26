@@ -81,9 +81,9 @@ public class ReviewServiceImpl implements ReviewService {
                 .status(ReviewStatus.PENDING_INVITATION)
                 .deadline(deadlineService.calculateDeadline())
                 .reviewRound(1)
-
                 .revisionNumber(paper.getRevisionNumber())
                 .assignedBy(currentUserService.getCurrentUser().getId())
+                .invitationSentAt(LocalDateTime.now())
                 .assignedAt(LocalDateTime.now())
                 .createdAt(LocalDateTime.now())
                 .build();
