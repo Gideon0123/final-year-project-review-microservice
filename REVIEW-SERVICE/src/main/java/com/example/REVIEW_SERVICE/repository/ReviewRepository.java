@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -76,6 +77,26 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, JpaSpecif
     long countOverdueReviews(
             @Param("reviewerId") Long reviewerId,
             @Param("now") LocalDateTime now
+    );
+
+    @Query("""
+SELECT r
+FROM Review r
+WHERE
+    r.status IN (
+        com.example.REVIEW_SERVICE.enums.ReviewStatus.INVITATION_ACCEPTED,
+        com.example.REVIEW_SERVICE.enums.ReviewStatus.IN_PROGRESS
+    )
+AND r.deadline <= :deadline
+AND (
+        r.lastReminderSentAt IS NULL
+        OR
+        r.lastReminderSentAt < :today
+    )
+""")
+    List<Review> findReviewsNeedingReminder(
+            LocalDateTime deadline,
+            LocalDateTime today
     );
 
     long countByReviewerIdAndStatusIn(

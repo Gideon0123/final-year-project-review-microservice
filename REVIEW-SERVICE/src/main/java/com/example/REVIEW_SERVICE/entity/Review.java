@@ -127,11 +127,11 @@ public class Review {
 
     private LocalDateTime decisionAt;
 
+    @Column(name = "last_reminder_sent_at")
+    private LocalDateTime lastReminderSentAt;
+
     @CreatedDate
-    @Column(
-            nullable = false,
-            updatable = false
-    )
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
