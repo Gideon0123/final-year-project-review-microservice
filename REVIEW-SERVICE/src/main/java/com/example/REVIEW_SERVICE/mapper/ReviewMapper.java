@@ -3,20 +3,26 @@ package com.example.REVIEW_SERVICE.mapper;
 import com.example.REVIEW_SERVICE.dto.ReviewResponse;
 import com.example.REVIEW_SERVICE.entity.Review;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
+
+import java.time.temporal.ChronoUnit;
 
 @Mapper(
         componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        imports = ChronoUnit.class
 )
 public interface ReviewMapper {
 
-    ReviewResponse toResponse(
-            Review review
-    );
-
-//    ReviewSummaryResponse toSummary(
-//            Review review
-//    );
+    @Mapping(
+            target = "overdue",
+            expression = "java(review.getDeadline() != null && java.time.LocalDateTime.now().isAfter(review.getDeadline()))"
+    )
+    @Mapping(
+            target = "daysRemaining",
+            expression = "java(ChronoUnit.DAYS.between(java.time.LocalDate.now(), review.getDeadline().toLocalDate()))"
+    )
+    ReviewResponse toResponse(Review review);
 
 }

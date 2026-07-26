@@ -9,6 +9,7 @@ import com.example.REVIEW_SERVICE.exception.*;
 import com.example.REVIEW_SERVICE.repository.ReviewRepository;
 import com.example.REVIEW_SERVICE.service.AuthLookupService;
 import com.example.REVIEW_SERVICE.service.ResearchPaperLookupService;
+import com.example.REVIEW_SERVICE.service.ReviewDeadlineService;
 import com.example.REVIEW_SERVICE.service.ReviewValidationService;
 import com.example.REVIEW_SERVICE.utils.ReviewValidationConstants;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
     private final ReviewRepository reviewRepository;
     private final ResearchPaperLookupService researchPaperLookupService;
     private final AuthLookupService authLookupService;
+    private final ReviewDeadlineService deadlineService;
     private static final Set<ReviewStatus> ACTIVE_REVIEW_STATUSES =
             Set.of(
                     ReviewStatus.PENDING_INVITATION,
@@ -32,6 +34,15 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
                     ReviewStatus.IN_PROGRESS
             );
 
+    private void validateDeadline(
+            Review review
+    ) {
+
+        if (deadlineService.isOverdue(review)) {
+            throw new InvalidReviewStateException("Review deadline has expired.");
+        }
+
+    }
 
     private void validateReviewerWorkload(
             Long reviewerId
@@ -150,7 +161,6 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
     public void validateSubmission(
             Review review
     ) {
-
         if (review.getStatus() == ReviewStatus.COMPLETED) {
             throw new ReviewAlreadyCompletedException("Review has already been submitted.");
         }
@@ -164,6 +174,8 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
 
             throw new InvalidReviewStateException("Review is not ready for submission.");
         }
+
+        validateDeadline(review);
     }
 
     @Override

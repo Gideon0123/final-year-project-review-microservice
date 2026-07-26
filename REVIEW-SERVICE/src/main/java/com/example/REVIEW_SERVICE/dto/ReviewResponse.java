@@ -26,6 +26,10 @@ public class ReviewResponse {
 
     private ReviewRecommendation recommendation;
 
+    private boolean overdue;
+
+    private long daysRemaining;
+
     private ReviewScore overallScore;
 
     private String commentsForAuthor;

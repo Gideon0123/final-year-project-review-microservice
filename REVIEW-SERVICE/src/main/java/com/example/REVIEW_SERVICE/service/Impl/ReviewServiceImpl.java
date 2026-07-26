@@ -99,6 +99,7 @@ public class ReviewServiceImpl implements ReviewService {
     ) {
         Review review = lookupService.getReviewById(reviewId);
         authorizationService.verifyReviewer(review);
+        validationService.validateInvitationAcceptance(review);
 
         review.setStatus(ReviewStatus.INVITATION_ACCEPTED);
         review.setAcceptedAt(LocalDateTime.now());
@@ -113,8 +114,9 @@ public class ReviewServiceImpl implements ReviewService {
             DeclineReviewRequest request
     ) {
         Review review = lookupService.getReviewById(reviewId);
-
         authorizationService.verifyReviewer(review);
+        validationService.validateInvitationDecline(review);
+
         review.setStatus(ReviewStatus.INVITATION_DECLINED);
         review.setDeclineReason(request.getReason());
         review.setDeclinedAt(LocalDateTime.now());

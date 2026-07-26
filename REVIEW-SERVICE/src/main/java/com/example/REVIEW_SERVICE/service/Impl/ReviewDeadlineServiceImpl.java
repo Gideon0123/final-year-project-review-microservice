@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -30,24 +32,30 @@ public class ReviewDeadlineServiceImpl implements ReviewDeadlineService {
 
     }
 
-    /**
-     * Determines whether the review
-     * deadline has expired.
-     */
     @Override
-    public boolean isExpired(
+    public boolean isOverdue(
             Review review
     ) {
+        return LocalDateTime.now().isAfter(
+                review.getDeadline()
+        );
+    }
 
-        LocalDateTime deadline = review.getDeadline();
+    @Override
+    public long daysRemaining(
+            Review review
+    ) {
+        return ChronoUnit.DAYS.between(
+                LocalDate.now(),
+                review.getDeadline().toLocalDate()
+        );
+    }
 
-        if (deadline == null) {
-            return false;
-        }
-
-        return LocalDateTime.now()
-                .isAfter(deadline);
-
+    @Override
+    public boolean canSubmit(
+            Review review
+    ) {
+        return !isOverdue(review);
     }
 
 }
