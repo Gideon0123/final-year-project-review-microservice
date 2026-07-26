@@ -9,4 +9,7 @@ public enum ReviewStatus {
     SUBMITTED,
     CANCELLED,
     COMPLETED,
+    ACCEPTED,
+    REVISION_REQUESTED,
+    REJECTED
 }

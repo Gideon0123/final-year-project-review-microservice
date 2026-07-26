@@ -270,11 +270,18 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
     public void validateDecision(
             Review review
     ) {
-        if (review.getStatus() != ReviewStatus.COMPLETED) {
+        if (review.getStatus() != ReviewStatus.SUBMITTED) {
             throw new InvalidReviewStateException(
-                    "Editorial decision can only be made after review completion."
+                    "Editorial decisions can only be made after a review has been submitted."
             );
         }
+
+        if (review.getDecision() != null) {
+            throw new InvalidReviewStateException(
+                    "An editorial decision has already been recorded."
+            );
+        }
+
     }
 
     @Override

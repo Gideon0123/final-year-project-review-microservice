@@ -177,6 +177,24 @@ public class ReviewServiceImpl implements ReviewService {
         review.setCommentsForEditor(request.getComment());
         review.setDecisionAt(LocalDateTime.now());
 
+        switch (request.getDecision()) {
+            case ACCEPT ->
+                    review.setStatus(
+                            ReviewStatus.ACCEPTED
+                    );
+
+            case MINOR_REVISION, MAJOR_REVISION ->
+                    review.setStatus(
+                            ReviewStatus.REVISION_REQUESTED
+                    );
+
+            case REJECT ->
+                    review.setStatus(
+                            ReviewStatus.REJECTED
+                    );
+
+        }
+
         reviewRepository.save(review);
 
         return reviewMapper.toResponse(review);
