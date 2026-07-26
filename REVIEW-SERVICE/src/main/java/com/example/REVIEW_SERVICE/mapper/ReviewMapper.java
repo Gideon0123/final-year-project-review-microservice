@@ -23,6 +23,10 @@ public interface ReviewMapper {
             target = "daysRemaining",
             expression = "java(ChronoUnit.DAYS.between(java.time.LocalDate.now(), review.getDeadline().toLocalDate()))"
     )
+    @Mapping(
+            target = "hasAttachment",
+            expression = "java(review.getAttachmentUrl() != null)"
+    )
     ReviewResponse toResponse(Review review);
 
 }

@@ -27,5 +27,7 @@ public class ReviewResponse {
     private String commentsForEditor;
     private LocalDateTime deadline;
     private LocalDateTime submittedAt;
+    private String attachmentUrl;
+    private boolean hasAttachment;
 
 }

@@ -133,12 +133,19 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = lookupService.getReviewById(reviewId);
 
         authorizationService.verifyReviewer(review);
-        validationService.validateSubmission(review);
+
+        if (review.getStatus() == ReviewStatus.INVITATION_ACCEPTED) {
+
+            review.setStatus(ReviewStatus.IN_PROGRESS);
+        }
+
+        validationService.validateSubmission(review, request);
         review.setCommentsForAuthor(request.getCommentsForAuthor());
         review.setCommentsForEditor(request.getCommentsForEditor());
         review.setOverallScore(request.getOverallScore());
         review.setRecommendation(request.getRecommendation());
         review.setStatus(ReviewStatus.SUBMITTED);
+        review.setAttachmentUrl(request.getAttachmentUrl());
         review.setSubmittedAt(LocalDateTime.now());
 
         reviewRepository.save(review);

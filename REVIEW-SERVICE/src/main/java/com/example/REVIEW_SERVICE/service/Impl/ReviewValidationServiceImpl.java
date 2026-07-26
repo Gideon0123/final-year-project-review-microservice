@@ -1,9 +1,13 @@
 package com.example.REVIEW_SERVICE.service.Impl;
 
 import com.example.REVIEW_SERVICE.dto.PaperSummaryResponse;
+import com.example.REVIEW_SERVICE.dto.RecommendationValidationResult;
 import com.example.REVIEW_SERVICE.dto.ReviewerSummaryResponse;
+import com.example.REVIEW_SERVICE.dto.SubmitReviewRequest;
 import com.example.REVIEW_SERVICE.entity.Review;
 import com.example.REVIEW_SERVICE.enums.ResearchStatus;
+import com.example.REVIEW_SERVICE.enums.ReviewRecommendation;
+import com.example.REVIEW_SERVICE.enums.ReviewScore;
 import com.example.REVIEW_SERVICE.enums.ReviewStatus;
 import com.example.REVIEW_SERVICE.exception.*;
 import com.example.REVIEW_SERVICE.repository.ReviewRepository;
@@ -33,6 +37,60 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
                     ReviewStatus.INVITATION_ACCEPTED,
                     ReviewStatus.IN_PROGRESS
             );
+
+    private RecommendationValidationResult validateRecommendationConsistency(
+            SubmitReviewRequest request
+    ) {
+
+        ReviewScore score = request.getOverallScore();
+        ReviewRecommendation recommendation =
+                request.getRecommendation();
+
+        if (score == null || recommendation == null) {
+
+            return new RecommendationValidationResult(
+                    false,
+                    null
+            );
+
+        }
+
+        switch (score) {
+
+            case FIVE -> {
+
+                if (recommendation == ReviewRecommendation.REJECT) {
+
+                    return new RecommendationValidationResult(
+                            true,
+                            "Reviewer rated the paper as EXCELLENT but recommended REJECTION."
+                    );
+
+                }
+
+            }
+
+            case ONE -> {
+
+                if (recommendation == ReviewRecommendation.ACCEPT) {
+
+                    return new RecommendationValidationResult(
+                            true,
+                            "Reviewer rated the paper as POOR but recommended ACCEPTANCE."
+                    );
+
+                }
+
+            }
+
+        }
+
+        return new RecommendationValidationResult(
+                false,
+                null
+        );
+
+    }
 
     private void validateDeadline(
             Review review
@@ -158,8 +216,9 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
     }
 
     @Override
-    public void validateSubmission(
-            Review review
+    public RecommendationValidationResult validateSubmission(
+            Review review,
+            SubmitReviewRequest request
     ) {
         if (review.getStatus() == ReviewStatus.COMPLETED) {
             throw new ReviewAlreadyCompletedException("Review has already been submitted.");
@@ -175,7 +234,36 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
             throw new InvalidReviewStateException("Review is not ready for submission.");
         }
 
+        if (request.getRecommendation() == null) {
+            throw new InvalidReviewStateException("Recommendation is required.");
+        }
+
+        if (request.getOverallScore() == null) {
+            throw new InvalidReviewStateException("Overall score is required.");
+        }
+
+        if (request.getCommentsForAuthor() == null ||
+                request.getCommentsForAuthor().isBlank()) {
+
+            throw new InvalidReviewStateException("Comments for author are required.");
+        }
+
+        String attachment = request.getAttachmentUrl();
+
+        if (attachment != null && !attachment.isBlank()) {
+
+            if (!(attachment.startsWith("http://")
+                    || attachment.startsWith("https://"))) {
+
+                throw new InvalidReviewStateException(
+                        "Attachment URL must be a valid HTTP or HTTPS URL."
+                );
+            }
+        }
+
         validateDeadline(review);
+
+        return validateRecommendationConsistency(request);
     }
 
     @Override

@@ -137,4 +137,11 @@ public class Review {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @Column(name = "requires_editorial_attention", nullable = false)
+    @Builder.Default
+    private Boolean requiresEditorialAttention = false;
+
+    @Column(length = 500)
+    private String editorialAttentionReason;
+
 }
