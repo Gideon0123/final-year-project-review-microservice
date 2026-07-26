@@ -30,4 +30,7 @@ public class ReviewResponse {
     private String attachmentUrl;
     private boolean hasAttachment;
 
+    private Boolean requiresEditorialAttention;
+    private String editorialAttentionReason;
+
 }

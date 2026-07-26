@@ -79,11 +79,17 @@ public class BlindReviewServiceImpl implements BlindReviewService {
     ) {
         response.setReviewerId(null);
         response.setCommentsForEditor(null);
+
+        response.setRequiresEditorialAttention(null);
+        response.setEditorialAttentionReason(null);
     }
 
     private void maskForReviewer(
             ReviewResponse response
     ) {
+
+        response.setRequiresEditorialAttention(null);
+        response.setEditorialAttentionReason(null);
 
         /*
          Nothing to hide yet.

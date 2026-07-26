@@ -139,7 +139,11 @@ public class ReviewServiceImpl implements ReviewService {
             review.setStatus(ReviewStatus.IN_PROGRESS);
         }
 
-        validationService.validateSubmission(review, request);
+        RecommendationValidationResult validationResult =
+                validationService.validateSubmission(
+                        review,
+                        request
+                );
         review.setCommentsForAuthor(request.getCommentsForAuthor());
         review.setCommentsForEditor(request.getCommentsForEditor());
         review.setOverallScore(request.getOverallScore());
@@ -147,6 +151,13 @@ public class ReviewServiceImpl implements ReviewService {
         review.setStatus(ReviewStatus.SUBMITTED);
         review.setAttachmentUrl(request.getAttachmentUrl());
         review.setSubmittedAt(LocalDateTime.now());
+
+        review.setRequiresEditorialAttention(
+                validationResult.isRequiresAttention()
+        );
+        review.setEditorialAttentionReason(
+                validationResult.getReason()
+        );
 
         reviewRepository.save(review);
 
