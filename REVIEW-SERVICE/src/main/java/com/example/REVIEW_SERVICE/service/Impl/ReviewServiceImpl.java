@@ -3,6 +3,7 @@ package com.example.REVIEW_SERVICE.service.Impl;
 import com.example.REVIEW_SERVICE.dto.*;
 import com.example.REVIEW_SERVICE.entity.CurrentUser;
 import com.example.REVIEW_SERVICE.entity.Review;
+import com.example.REVIEW_SERVICE.enums.EditorialDecision;
 import com.example.REVIEW_SERVICE.enums.ReviewStatus;
 import com.example.REVIEW_SERVICE.mapper.ReviewMapper;
 import com.example.REVIEW_SERVICE.payload.PagedResponse;
@@ -33,6 +34,8 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewDeadlineService deadlineService;
 //    private final ReviewStatisticsService statisticsService;
     private final ResearchPaperLookupService paperLookupService;
+    private final ResearchStatusService researchStatusService;
+    private final ReviewDecisionHistoryService decisionHistoryService;
 
     private ReviewSummaryResponse toSummary(
             Review review
@@ -170,14 +173,22 @@ public class ReviewServiceImpl implements ReviewService {
             EditorialDecisionRequest request
     ) {
         authorizationService.verifyEditor();
+
         Review review = lookupService.getReviewById(reviewId);
+
         validationService.validateDecision(review);
+
+        /*
+         * Preserve the previous decision before updating.
+         */
+        EditorialDecision previousDecision = review.getDecision();
 
         review.setDecision(request.getDecision());
         review.setCommentsForEditor(request.getComment());
         review.setDecisionAt(LocalDateTime.now());
 
         switch (request.getDecision()) {
+
             case ACCEPT ->
                     review.setStatus(
                             ReviewStatus.ACCEPTED
@@ -197,9 +208,21 @@ public class ReviewServiceImpl implements ReviewService {
 
         reviewRepository.save(review);
 
+        decisionHistoryService.recordDecision(
+                review,
+                previousDecision,
+                request.getDecision(),
+                request.getComment(),
+                currentUserService.getCurrentUser().getId()
+        );
+
+        researchStatusService.updatePaperStatus(
+                review.getPaperId(),
+                request.getDecision()
+        );
+
         return reviewMapper.toResponse(review);
     }
-
     @Override
     @Transactional(readOnly = true)
     public PagedResponse<ReviewSummaryResponse> getAssignedReviews(
