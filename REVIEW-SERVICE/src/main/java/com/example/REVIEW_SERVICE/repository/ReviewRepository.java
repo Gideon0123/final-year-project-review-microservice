@@ -112,4 +112,17 @@ AND (
             Long paperId
     );
 
+    Optional<Review> findTopByPaperIdOrderByRevisionNumberDesc(
+            Long paperId
+    );
+
+    @Query("""
+       SELECT MAX(r.reviewRound)
+       FROM Review r
+       WHERE r.paperId = :paperId
+       """)
+    Integer findHighestReviewRound(
+            @Param("paperId") Long paperId
+    );
+
 }
