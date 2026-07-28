@@ -68,4 +68,16 @@ public class ReviewLookupServiceImpl implements ReviewLookupService {
 
     }
 
+    @Override
+    public List<Review> getCurrentReviews(Long paperId) {
+
+        Integer currentRound = reviewRepository.findHighestReviewRound(paperId)
+                .orElse(1);
+
+        return reviewRepository.findByPaperIdAndReviewRound(
+                paperId,
+                currentRound
+        );
+    }
+
 }

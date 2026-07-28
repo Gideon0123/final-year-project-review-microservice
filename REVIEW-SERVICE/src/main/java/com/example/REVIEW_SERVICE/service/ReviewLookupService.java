@@ -13,6 +13,7 @@ public interface ReviewLookupService {
     Page<Review> getReviewsForPaper(Long paperId, Pageable pageable);
     Page<Review> getReviewsForReviewer(Long reviewerId, Pageable pageable);
     List<ReviewDecisionHistory> getDecisionHistory(Long reviewId);
+    List<Review> getCurrentReviews(Long paperId);
 
 }
 

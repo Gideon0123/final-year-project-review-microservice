@@ -116,6 +116,13 @@ AND (
             Long paperId
     );
 
+    List<Review> findByPaperIdAndReviewRound(
+            Long paperId,
+            Integer reviewRound
+    );
+
+
+
     @Query("""
        SELECT MAX(r.reviewRound)
        FROM Review r
@@ -124,6 +131,18 @@ AND (
     Optional<Integer> findHighestReviewRound(
             @Param("paperId") Long paperId
     );
+
+    default List<Review> findCurrentReviews(Long paperId){
+
+        Integer round = findHighestReviewRound(paperId)
+                .orElse(1);
+
+        return findByPaperIdAndReviewRound(
+                paperId,
+                round
+        );
+
+    }
 
     @Query("""
 SELECT r
