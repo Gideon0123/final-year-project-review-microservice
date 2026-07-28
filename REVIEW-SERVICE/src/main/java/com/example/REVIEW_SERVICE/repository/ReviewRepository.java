@@ -108,4 +108,8 @@ AND (
 
     boolean existsByPaperIdAndReviewerId(Long paperId, Long reviewerId);
 
+    List<Review> findByPaperId(
+            Long paperId
+    );
+
 }

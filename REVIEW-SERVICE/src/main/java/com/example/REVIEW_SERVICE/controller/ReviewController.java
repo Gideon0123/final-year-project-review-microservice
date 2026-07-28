@@ -3,6 +3,7 @@ package com.example.REVIEW_SERVICE.controller;
 import com.example.REVIEW_SERVICE.dto.*;
 import com.example.REVIEW_SERVICE.payload.PagedResponse;
 import com.example.REVIEW_SERVICE.service.CurrentUserService;
+import com.example.REVIEW_SERVICE.service.ReviewDashboardService;
 import com.example.REVIEW_SERVICE.service.ReviewService;
 import com.example.REVIEW_SERVICE.service.ReviewStatisticsService;
 import com.example.REVIEW_SERVICE.utils.TraceIdUtil;
@@ -26,6 +27,7 @@ public class ReviewController {
     private final CurrentUserService currentUserService;
     private final ReviewStatisticsService statisticsService;
     private final ReviewService reviewService;
+    private final ReviewDashboardService reviewDashboardService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/assign")
@@ -134,6 +136,30 @@ public class ReviewController {
                         .timestamp(LocalDateTime.now())
                         .build()
         );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/papers/{paperId}/dashboard")
+    public ResponseEntity<ApiResponse<PaperDashboardResponse>> getDashboard(
+            @PathVariable Long paperId,
+            HttpServletRequest request
+    ) {
+        PaperDashboardResponse response = reviewDashboardService.getDashboard(
+                paperId
+        );
+
+        return ResponseEntity.ok(
+                ApiResponse.<PaperDashboardResponse>builder()
+                        .success(true)
+                        .status(HttpStatus.OK.value())
+                        .message("Editorial dashboard retrieved successfully.")
+                        .data(response)
+                        .path(request.getRequestURI())
+                        .traceId(TraceIdUtil.generate())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+
     }
 
     @PreAuthorize("hasRole('REVIEWER')")
