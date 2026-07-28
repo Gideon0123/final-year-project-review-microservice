@@ -32,7 +32,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewValidationService validationService;
     private final ReviewAuthorizationService authorizationService;
     private final ReviewDeadlineService deadlineService;
-//    private final ReviewStatisticsService statisticsService;
+    private final ReviewRoundService reviewRoundService;
     private final ResearchPaperLookupService paperLookupService;
     private final ResearchStatusService researchStatusService;
     private final ReviewDecisionHistoryService decisionHistoryService;
@@ -83,7 +83,11 @@ public class ReviewServiceImpl implements ReviewService {
                 .reviewerId(request.getReviewerId())
                 .status(ReviewStatus.PENDING_INVITATION)
                 .deadline(deadlineService.calculateDeadline())
-                .reviewRound(1)
+                .reviewRound(
+                        reviewRoundService.getCurrentRound(
+                                request.getPaperId()
+                        )
+                )
                 .revisionNumber(paper.getRevisionNumber())
                 .assignedBy(currentUserService.getCurrentUser().getId())
                 .invitationSentAt(LocalDateTime.now())

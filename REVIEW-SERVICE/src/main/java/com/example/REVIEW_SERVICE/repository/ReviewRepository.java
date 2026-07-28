@@ -121,8 +121,21 @@ AND (
        FROM Review r
        WHERE r.paperId = :paperId
        """)
-    Integer findHighestReviewRound(
+    Optional<Integer> findHighestReviewRound(
             @Param("paperId") Long paperId
     );
+
+    @Query("""
+SELECT r
+FROM Review r
+WHERE r.paperId = :paperId
+AND r.reviewRound =
+(
+    SELECT MAX(r2.reviewRound)
+    FROM Review r2
+    WHERE r2.paperId = :paperId
+)
+""")
+    List<Review> findLatestRoundReviews(Long paperId);
 
 }

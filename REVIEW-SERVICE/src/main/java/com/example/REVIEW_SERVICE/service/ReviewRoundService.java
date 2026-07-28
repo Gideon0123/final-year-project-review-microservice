@@ -2,8 +2,8 @@ package com.example.REVIEW_SERVICE.service;
 
 public interface ReviewRoundService {
 
-    Integer determineNextRound(
-            Long paperId
-    );
+    Integer determineNextRound(Long paperId);
+
+    Integer getCurrentRound(Long paperId);
 
 }
