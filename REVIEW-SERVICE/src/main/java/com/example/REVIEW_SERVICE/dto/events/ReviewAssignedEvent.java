@@ -21,4 +21,6 @@ public class ReviewAssignedEvent {
 
     private LocalDateTime deadline;
 
+    private Integer revisionNumber;
+
 }

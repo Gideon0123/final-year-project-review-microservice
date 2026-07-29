@@ -1,12 +1,14 @@
 package com.example.REVIEW_SERVICE.service.Impl;
 
 import com.example.REVIEW_SERVICE.dto.*;
+import com.example.REVIEW_SERVICE.dto.events.*;
 import com.example.REVIEW_SERVICE.entity.CurrentUser;
 import com.example.REVIEW_SERVICE.entity.Review;
 import com.example.REVIEW_SERVICE.enums.EditorialDecision;
 import com.example.REVIEW_SERVICE.enums.ReviewStatus;
 import com.example.REVIEW_SERVICE.mapper.ReviewMapper;
 import com.example.REVIEW_SERVICE.payload.PagedResponse;
+import com.example.REVIEW_SERVICE.publisher.ReviewEventPublisher;
 import com.example.REVIEW_SERVICE.repository.ReviewRepository;
 import com.example.REVIEW_SERVICE.service.*;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ResearchStatusService researchStatusService;
     private final ReviewDecisionHistoryService decisionHistoryService;
     private final RevisionHistoryService revisionHistoryService;
+    private final ReviewEventPublisher reviewEventPublisher;
 
     private ReviewSummaryResponse toSummary(
             Review review
@@ -99,6 +102,17 @@ public class ReviewServiceImpl implements ReviewService {
 
         reviewRepository.save(review);
 
+        reviewEventPublisher.publishAssigned(
+                ReviewAssignedEvent.builder()
+                        .reviewId(review.getId())
+                        .paperId(review.getPaperId())
+                        .reviewerId(review.getReviewerId())
+                        .deadline(review.getDeadline())
+                        .reviewRound(review.getReviewRound())
+                        .revisionNumber(review.getRevisionNumber())
+                        .build()
+        );
+
         return reviewMapper.toResponse(review);
     }
 
@@ -113,6 +127,15 @@ public class ReviewServiceImpl implements ReviewService {
         review.setStatus(ReviewStatus.INVITATION_ACCEPTED);
         review.setAcceptedAt(LocalDateTime.now());
         reviewRepository.save(review);
+
+        reviewEventPublisher.publishAccepted(
+                ReviewAcceptedEvent.builder()
+                        .reviewId(review.getId())
+                        .paperId(review.getPaperId())
+                        .reviewerId(review.getReviewerId())
+                        .acceptedAt(review.getAcceptedAt())
+                        .build()
+        );
 
         return reviewMapper.toResponse(review);
     }
@@ -131,6 +154,17 @@ public class ReviewServiceImpl implements ReviewService {
         review.setDeclinedAt(LocalDateTime.now());
 
         reviewRepository.save(review);
+
+        reviewEventPublisher.publishDeclined(
+                ReviewDeclinedEvent.builder()
+                        .reviewId(review.getId())
+                        .paperId(review.getPaperId())
+                        .reviewerId(review.getReviewerId())
+                        .reason(request.getReason())
+                        .declinedAt(review.getDeclinedAt())
+                        .build()
+        );
+
         return reviewMapper.toResponse(review);
     }
 
@@ -169,6 +203,23 @@ public class ReviewServiceImpl implements ReviewService {
         );
 
         reviewRepository.save(review);
+
+        reviewEventPublisher.publishSubmitted(
+                ReviewSubmittedEvent.builder()
+                        .reviewId(review.getId())
+                        .paperId(review.getPaperId())
+                        .reviewerId(review.getReviewerId())
+                        .recommendation(review.getRecommendation())
+                        .overallScore(review.getOverallScore())
+                        .submittedAt(review.getSubmittedAt())
+                        .requiresEditorialAttention(
+                                review.getRequiresEditorialAttention()
+                        )
+                        .editorialAttentionReason(
+                                review.getEditorialAttentionReason()
+                        )
+                        .build()
+        );
 
         return reviewMapper.toResponse(review);
     }
@@ -225,6 +276,16 @@ public class ReviewServiceImpl implements ReviewService {
         researchStatusService.updatePaperStatus(
                 review.getPaperId(),
                 request.getDecision()
+        );
+
+        reviewEventPublisher.publishDecision(
+                EditorialDecisionEvent.builder()
+                        .reviewId(review.getId())
+                        .paperId(review.getPaperId())
+                        .decision(review.getDecision())
+                        .editorId(currentUserService.getCurrentUser().getId())
+                        .decisionAt(review.getDecisionAt())
+                        .build()
         );
 
         return reviewMapper.toResponse(review);

@@ -3,6 +3,8 @@ package com.example.REVIEW_SERVICE.dto.events;
 import com.example.REVIEW_SERVICE.enums.EditorialDecision;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -17,5 +19,7 @@ public class EditorialDecisionEvent {
     private Long editorId;
 
     private EditorialDecision decision;
+
+    private LocalDateTime decisionAt;
 
 }

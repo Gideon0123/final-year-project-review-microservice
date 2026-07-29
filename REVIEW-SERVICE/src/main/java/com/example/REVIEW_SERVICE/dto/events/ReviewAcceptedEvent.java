@@ -2,6 +2,8 @@ package com.example.REVIEW_SERVICE.dto.events;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -14,5 +16,7 @@ public class ReviewAcceptedEvent {
     private Long paperId;
 
     private Long reviewerId;
+
+    private LocalDateTime acceptedAt;
 
 }
