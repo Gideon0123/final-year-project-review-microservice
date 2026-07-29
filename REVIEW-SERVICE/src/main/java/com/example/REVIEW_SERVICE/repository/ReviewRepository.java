@@ -144,6 +144,10 @@ AND (
 
     }
 
+    List<Review> findByPaperIdOrderByRevisionNumberAscReviewRoundAsc(
+            Long paperId
+    );
+
     @Query("""
 SELECT r
 FROM Review r

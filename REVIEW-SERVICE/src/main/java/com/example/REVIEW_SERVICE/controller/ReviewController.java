@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/review")
@@ -292,4 +293,31 @@ public class ReviewController {
                         .build()
         );
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/papers/{paperId}/revision-history")
+    public ResponseEntity<ApiResponse<List<RevisionHistoryResponse>>> getRevisionHistory(
+            @PathVariable Long paperId,
+            HttpServletRequest request
+    ){
+        List<RevisionHistoryResponse> response =
+                reviewService.getRevisionHistory(
+                        paperId
+                );
+
+        return ResponseEntity.ok(
+                ApiResponse.<List<RevisionHistoryResponse>>builder()
+                        .success(true)
+                        .message("Revision history retrieved successfully.")
+                        .status(HttpStatus.OK.value())
+                        .data(response)
+                        .path(request.getRequestURI())
+                        .traceId(TraceIdUtil.generate())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+
+        );
+
+    }
+
 }

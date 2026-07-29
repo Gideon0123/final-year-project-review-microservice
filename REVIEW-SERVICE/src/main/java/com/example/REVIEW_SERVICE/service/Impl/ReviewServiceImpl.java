@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ResearchPaperLookupService paperLookupService;
     private final ResearchStatusService researchStatusService;
     private final ReviewDecisionHistoryService decisionHistoryService;
+    private final RevisionHistoryService revisionHistoryService;
 
     private ReviewSummaryResponse toSummary(
             Review review
@@ -307,5 +309,17 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         return blindReviewService.maskReview(review, user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RevisionHistoryResponse> getRevisionHistory(
+            Long paperId
+    ) {
+        authorizationService.verifyEditor();
+
+        return revisionHistoryService.getRevisionHistory(
+                paperId
+        );
     }
 }

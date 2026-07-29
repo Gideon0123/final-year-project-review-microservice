@@ -3,6 +3,8 @@ package com.example.REVIEW_SERVICE.service;
 import com.example.REVIEW_SERVICE.dto.*;
 import com.example.REVIEW_SERVICE.payload.PagedResponse;
 
+import java.util.List;
+
 public interface ReviewService {
 
     ReviewResponse assignReviewer(AssignReviewerRequest request);
@@ -17,6 +19,6 @@ public interface ReviewService {
             Long paperId, int page, int size, String sortBy, String sortDirection
     );
     ReviewResponse getReview(Long reviewId);
-
+    List<RevisionHistoryResponse> getRevisionHistory(Long paperId);
 
 }
