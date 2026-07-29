@@ -16,10 +16,9 @@ public class RabbitReviewEventPublisher implements ReviewEventPublisher {
     public void publishAssigned(
             ReviewAssignedEvent event
     ) {
-
         rabbitTemplate.convertAndSend(
                 RabbitMQConstants.REVIEW_EXCHANGE,
-                RabbitMQConstants.REVIEW_ASSIGNED_ROUTING_KEY,
+                RabbitMQConstants.REVIEW_ASSIGNMENT_ROUTING_KEY,
                 event
         );
 
@@ -29,7 +28,6 @@ public class RabbitReviewEventPublisher implements ReviewEventPublisher {
     public void publishAccepted(
             ReviewAcceptedEvent event
     ) {
-
         rabbitTemplate.convertAndSend(
                 RabbitMQConstants.REVIEW_EXCHANGE,
                 RabbitMQConstants.REVIEW_ACCEPTED_ROUTING_KEY,
@@ -42,7 +40,6 @@ public class RabbitReviewEventPublisher implements ReviewEventPublisher {
     public void publishDeclined(
             ReviewDeclinedEvent event
     ) {
-
         rabbitTemplate.convertAndSend(
                 RabbitMQConstants.REVIEW_EXCHANGE,
                 RabbitMQConstants.REVIEW_DECLINED_ROUTING_KEY,
@@ -55,7 +52,6 @@ public class RabbitReviewEventPublisher implements ReviewEventPublisher {
     public void publishSubmitted(
             ReviewSubmittedEvent event
     ) {
-
         rabbitTemplate.convertAndSend(
                 RabbitMQConstants.REVIEW_EXCHANGE,
                 RabbitMQConstants.REVIEW_SUBMITTED_ROUTING_KEY,
@@ -68,7 +64,6 @@ public class RabbitReviewEventPublisher implements ReviewEventPublisher {
     public void publishDecision(
             EditorialDecisionEvent event
     ) {
-
         rabbitTemplate.convertAndSend(
                 RabbitMQConstants.REVIEW_EXCHANGE,
                 RabbitMQConstants.REVIEW_DECISION_ROUTING_KEY,

@@ -2,7 +2,8 @@ package com.example.REVIEW_SERVICE.utils;
 
 public final class RabbitMQConstants {
 
-    private RabbitMQConstants(){}
+    private RabbitMQConstants() {
+    }
 
     /*
      * Exchanges
@@ -10,36 +11,79 @@ public final class RabbitMQConstants {
     public static final String REVIEW_EXCHANGE =
             "review.exchange";
 
-    /*
-     * Queues
-     */
-    public static final String REVIEW_REMINDER_QUEUE =
-            "review.reminder.queue";
-
-    public static final String REVIEW_EVENT_QUEUE =
-            "review.event.queue";
+    public static final String REVIEW_DLX =
+            "review.dlx";
 
     /*
-     * Routing Keys
+     * Assignment
      */
-    public static final String REVIEW_REMINDER_ROUTING_KEY =
-            "review.reminder";
+    public static final String REVIEW_ASSIGNMENT_QUEUE =
+            "review.assignment.queue";
 
-    public static final String REVIEW_ASSIGNED_ROUTING_KEY =
-            "review.assigned";
+    public static final String REVIEW_ASSIGNMENT_ROUTING_KEY =
+            "review.assignment";
+
+    /*
+     * Invitation Accepted
+     */
+    public static final String REVIEW_ACCEPTED_QUEUE =
+            "review.accepted.queue";
 
     public static final String REVIEW_ACCEPTED_ROUTING_KEY =
             "review.accepted";
 
+    /*
+     * Invitation Declined
+     */
+    public static final String REVIEW_DECLINED_QUEUE =
+            "review.declined.queue";
+
     public static final String REVIEW_DECLINED_ROUTING_KEY =
             "review.declined";
+
+    /*
+     * Submission
+     */
+    public static final String REVIEW_SUBMITTED_QUEUE =
+            "review.submitted.queue";
 
     public static final String REVIEW_SUBMITTED_ROUTING_KEY =
             "review.submitted";
 
+    /*
+     * Decision
+     */
+    public static final String REVIEW_DECISION_QUEUE =
+            "review.decision.queue";
+
     public static final String REVIEW_DECISION_ROUTING_KEY =
             "review.decision";
 
+    /*
+     * Reminder
+     */
+    public static final String REVIEW_REMINDER_QUEUE =
+            "review.reminder.queue";
+
+    public static final String REVIEW_REMINDER_ROUTING_KEY =
+            "review.reminder";
+
+    /*
+     * Revision Requested
+     */
+    public static final String REVIEW_REVISION_QUEUE =
+            "review.revision.queue";
+
     public static final String REVIEW_REVISION_ROUTING_KEY =
             "review.revision";
+
+    /*
+     * Review Accepted
+     */
+    public static final String REVIEW_ACCEPTED_PAPER_QUEUE =
+            "review.paper.accepted.queue";
+
+    public static final String REVIEW_ACCEPTED_PAPER_ROUTING_KEY =
+            "review.paper.accepted";
+
 }
