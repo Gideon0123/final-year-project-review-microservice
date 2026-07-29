@@ -20,5 +20,6 @@ public interface ReviewService {
     );
     ReviewResponse getReview(Long reviewId);
     List<RevisionHistoryResponse> getRevisionHistory(Long paperId);
+//    EditorDashboardResponse getDashboard(Long paperId);
 
 }

@@ -1,12 +1,10 @@
 package com.example.REVIEW_SERVICE.service.Impl;
 
-import com.example.REVIEW_SERVICE.dto.PaperDashboardResponse;
-import com.example.REVIEW_SERVICE.dto.PaperSummaryResponse;
-import com.example.REVIEW_SERVICE.dto.ReviewerDashboardResponse;
+import com.example.REVIEW_SERVICE.dto.*;
 import com.example.REVIEW_SERVICE.entity.Review;
-import com.example.REVIEW_SERVICE.repository.ReviewRepository;
 import com.example.REVIEW_SERVICE.service.ResearchPaperLookupService;
 import com.example.REVIEW_SERVICE.service.ReviewDashboardService;
+import com.example.REVIEW_SERVICE.service.ReviewLookupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,54 +16,48 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ReviewDashboardServiceImpl implements ReviewDashboardService {
 
-    private final ReviewRepository reviewRepository;
-    private final ResearchPaperLookupService researchPaperLookupService;
+    private final ReviewLookupService lookupService;
+    private final ResearchPaperLookupService paperLookupService;
 
     @Override
-    public PaperDashboardResponse getDashboard(
-            Long paperId
-    ) {
-        PaperSummaryResponse paper = researchPaperLookupService.getPaperSummary(
-                paperId
-        );
-        List<Review> reviews = reviewRepository.findByPaperId(
+    public EditorDashboardResponse getDashboard(Long paperId) {
+        PaperSummaryResponse paper = paperLookupService.getPaperSummary(
                 paperId
         );
 
-        List<ReviewerDashboardResponse> response =
-                reviews.stream()
-                        .map(this::toDashboard)
-                        .toList();
+        List<Review> reviews = lookupService.getCurrentReviews(
+                paperId
+        );
 
-        return PaperDashboardResponse.builder()
+        return EditorDashboardResponse.builder()
                 .paperId(paper.getId())
                 .title(paper.getTitle())
-                .authorId(paper.getAuthorId())
-                .researchStatus(paper.getStatus())
-                .revisionNumber(paper.getRevisionNumber())
-                .reviews(response)
+                .status(paper.getStatus())
+                .currentRevision(paper.getRevisionNumber())
+                .currentRound(
+                        reviews.isEmpty()
+                                ? 0
+                                : reviews.getFirst().getReviewRound()
+                )
+                .activeReviews(
+                        reviews.stream()
+                                .map(this::toSummary)
+                                .toList()
+                )
                 .build();
-
     }
 
-    private ReviewerDashboardResponse toDashboard(
+    private ReviewSummaryResponse toSummary(
             Review review
     ) {
-
-        return ReviewerDashboardResponse.builder()
-                .reviewId(review.getId())
+        return ReviewSummaryResponse.builder()
+                .id(review.getId())
+                .paperId(review.getPaperId())
                 .reviewerId(review.getReviewerId())
-                .recommendation(review.getRecommendation())
-                .overallScore(review.getOverallScore())
                 .status(review.getStatus())
                 .deadline(review.getDeadline())
-                .decision(review.getDecision())
-                .editorialAttentionRequired(review.getRequiresEditorialAttention())
-                .editorialAttentionReason(
-                        review.getEditorialAttentionReason()
-                )
-                .submittedAt(review.getSubmittedAt())
-//                .submitted(review.submit)
+                .revisionNumber(review.getRevisionNumber())
+//                .recommendation(review.getRecommendation())
                 .build();
 
     }

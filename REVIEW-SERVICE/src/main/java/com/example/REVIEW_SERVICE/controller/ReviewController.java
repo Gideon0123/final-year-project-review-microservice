@@ -141,19 +141,19 @@ public class ReviewController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/papers/{paperId}/dashboard")
-    public ResponseEntity<ApiResponse<PaperDashboardResponse>> getDashboard(
+    public ResponseEntity<ApiResponse<EditorDashboardResponse>> getDashboard(
             @PathVariable Long paperId,
             HttpServletRequest request
     ) {
-        PaperDashboardResponse response = reviewDashboardService.getDashboard(
+        EditorDashboardResponse response = reviewDashboardService.getDashboard(
                 paperId
         );
 
         return ResponseEntity.ok(
-                ApiResponse.<PaperDashboardResponse>builder()
+                ApiResponse.<EditorDashboardResponse>builder()
                         .success(true)
                         .status(HttpStatus.OK.value())
-                        .message("Editorial dashboard retrieved successfully.")
+                        .message("Editor dashboard retrieved successfully.")
                         .data(response)
                         .path(request.getRequestURI())
                         .traceId(TraceIdUtil.generate())
@@ -319,5 +319,27 @@ public class ReviewController {
         );
 
     }
+
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @GetMapping("/dashboard/{paperId}")
+//    public ResponseEntity<ApiResponse<EditorDashboardResponse>> getEditorDashboard(
+//            @PathVariable Long paperId,
+//            HttpServletRequest request
+//    ) {
+//        EditorDashboardResponse response = reviewService.getDashboard(paperId);
+//
+//        return ResponseEntity.ok(
+//                ApiResponse.<EditorDashboardResponse>builder()
+//                        .success(true)
+//                        .message("Editorial Dashboard retrieved successfully.")
+//                        .status(HttpStatus.OK.value())
+//                        .data(response)
+//                        .path(request.getRequestURI())
+//                        .traceId(TraceIdUtil.generate())
+//                        .timestamp(LocalDateTime.now())
+//                        .build()
+//
+//        );
+//    }
 
 }

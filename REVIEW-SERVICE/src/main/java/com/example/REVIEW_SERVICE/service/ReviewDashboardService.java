@@ -1,10 +1,10 @@
 package com.example.REVIEW_SERVICE.service;
 
-import com.example.REVIEW_SERVICE.dto.PaperDashboardResponse;
+import com.example.REVIEW_SERVICE.dto.EditorDashboardResponse;
 
 public interface ReviewDashboardService {
 
-    PaperDashboardResponse getDashboard(
+    EditorDashboardResponse getDashboard(
             Long paperId
     );
 
