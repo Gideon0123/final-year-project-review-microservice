@@ -41,6 +41,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewDecisionHistoryService decisionHistoryService;
     private final RevisionHistoryService revisionHistoryService;
     private final ReviewEventPublisher reviewEventPublisher;
+    private final AuthLookupService authLookupService;
 
     private ReviewSummaryResponse toSummary(
             Review review
@@ -77,15 +78,20 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewResponse assignReviewer(
             AssignReviewerRequest request
     ) {
+        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(
+                request.getReviewerId()
+        );
+
         validationService.validateAssignment(
                 request.getPaperId(),
-                request.getReviewerId()
+                reviewer
         );
 
         PaperSummaryResponse paper = paperLookupService.getPaperSummary(request.getPaperId());
         Review review = Review.builder()
                 .paperId(request.getPaperId())
                 .reviewerId(request.getReviewerId())
+                .authorId(paper.getAuthorId())
                 .status(ReviewStatus.PENDING_INVITATION)
                 .deadline(deadlineService.calculateDeadline())
                 .reviewRound(
@@ -107,6 +113,7 @@ public class ReviewServiceImpl implements ReviewService {
                         .reviewId(review.getId())
                         .paperId(review.getPaperId())
                         .reviewerId(review.getReviewerId())
+                        .reviewerEmail(reviewer.getEmail())
                         .deadline(review.getDeadline())
                         .reviewRound(review.getReviewRound())
                         .revisionNumber(review.getRevisionNumber())
@@ -282,6 +289,7 @@ public class ReviewServiceImpl implements ReviewService {
                 EditorialDecisionEvent.builder()
                         .reviewId(review.getId())
                         .paperId(review.getPaperId())
+                        .authorId(review.getAuthorId())
                         .decision(review.getDecision())
                         .editorId(currentUserService.getCurrentUser().getId())
                         .decisionAt(review.getDecisionAt())
@@ -290,6 +298,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         return reviewMapper.toResponse(review);
     }
+
     @Override
     @Transactional(readOnly = true)
     public PagedResponse<ReviewSummaryResponse> getAssignedReviews(

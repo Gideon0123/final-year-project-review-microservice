@@ -18,6 +18,8 @@ public class EditorialDecisionEvent {
 
     private Long editorId;
 
+    private Long authorId;
+
     private EditorialDecision decision;
 
     private LocalDateTime decisionAt;

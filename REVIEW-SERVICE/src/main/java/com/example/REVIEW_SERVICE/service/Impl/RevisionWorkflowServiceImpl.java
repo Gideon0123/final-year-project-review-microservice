@@ -57,6 +57,7 @@ public class RevisionWorkflowServiceImpl implements RevisionWorkflowService {
         reviewEventPublisher.publishRevisionRequested(
                 RevisionRequestedEvent.builder()
                         .paperId(request.getPaperId())
+                        .authorId(latestReview.getAuthorId())
                         .revisionNumber(request.getRevisionNumber())
                         .submittedAt(LocalDateTime.now())
                         .build()

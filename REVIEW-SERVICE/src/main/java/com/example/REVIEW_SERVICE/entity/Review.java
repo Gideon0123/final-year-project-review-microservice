@@ -58,6 +58,8 @@ public class Review {
     )
     private Long reviewerId;
 
+    private long authorId;
+
     /**
      * Editor/Admin that assigned this review.
      */

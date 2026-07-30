@@ -17,6 +17,8 @@ public class ReviewAssignedEvent {
 
     private Long reviewerId;
 
+    private String reviewerEmail;
+
     private Integer reviewRound;
 
     private LocalDateTime deadline;

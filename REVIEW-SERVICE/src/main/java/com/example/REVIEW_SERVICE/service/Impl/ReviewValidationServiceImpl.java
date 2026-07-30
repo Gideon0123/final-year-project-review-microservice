@@ -154,7 +154,7 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
     @Override
     public void validateAssignment(
             Long paperId,
-            Long reviewerId
+            ReviewerSummaryResponse reviewer
     ) {
 
         /*
@@ -164,13 +164,13 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
                 paperId
         );
 
-        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(
-                reviewerId
-        );
+//        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(
+//                reviewerId
+//        );
 
         validateReviewerEligibility(reviewer);
 
-        if (paper.getAuthorId().equals(reviewerId)) {
+        if (paper.getAuthorId().equals(reviewer.getId())) {
 
             throw new ReviewerNotEligibleException(
                     "Authors cannot review their own papers."
@@ -178,7 +178,7 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
 
         }
 
-        validateReviewerWorkload(reviewerId);
+        validateReviewerWorkload(reviewer.getId());
 
         /*
          * Paper must be submitted.
@@ -197,7 +197,7 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
          */
         if (reviewRepository.existsByPaperIdAndReviewerId(
                 paperId,
-                reviewerId
+                reviewer.getId()
         )) {
             throw new DuplicateReviewerAssignmentException(
                     "Reviewer already assigned to this paper."

@@ -13,6 +13,8 @@ public class RevisionRequestedEvent {
 
     private Long paperId;
 
+    private Long authorId;
+
     private Integer revisionNumber;
 
     private LocalDateTime submittedAt;
