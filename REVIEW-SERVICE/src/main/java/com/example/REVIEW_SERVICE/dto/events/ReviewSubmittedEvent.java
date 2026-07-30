@@ -19,6 +19,8 @@ public class ReviewSubmittedEvent {
 
     private Long reviewerId;
 
+    private String reviewerEmail;
+
     private ReviewRecommendation recommendation;
 
     private ReviewScore overallScore;

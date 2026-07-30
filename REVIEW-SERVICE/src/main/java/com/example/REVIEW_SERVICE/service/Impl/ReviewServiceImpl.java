@@ -130,6 +130,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = lookupService.getReviewById(reviewId);
         authorizationService.verifyReviewer(review);
         validationService.validateInvitationAcceptance(review);
+        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(review.getReviewerId());
 
         review.setStatus(ReviewStatus.INVITATION_ACCEPTED);
         review.setAcceptedAt(LocalDateTime.now());
@@ -140,8 +141,10 @@ public class ReviewServiceImpl implements ReviewService {
                         .reviewId(review.getId())
                         .paperId(review.getPaperId())
                         .reviewerId(review.getReviewerId())
+                        .reviewerEmail(reviewer.getEmail())
                         .acceptedAt(review.getAcceptedAt())
                         .build()
+
         );
 
         return reviewMapper.toResponse(review);
@@ -155,6 +158,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = lookupService.getReviewById(reviewId);
         authorizationService.verifyReviewer(review);
         validationService.validateInvitationDecline(review);
+        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(review.getReviewerId());
 
         review.setStatus(ReviewStatus.INVITATION_DECLINED);
         review.setDeclineReason(request.getReason());
@@ -167,6 +171,7 @@ public class ReviewServiceImpl implements ReviewService {
                         .reviewId(review.getId())
                         .paperId(review.getPaperId())
                         .reviewerId(review.getReviewerId())
+                        .reviewerEmail(reviewer.getEmail())
                         .reason(request.getReason())
                         .declinedAt(review.getDeclinedAt())
                         .build()
@@ -188,6 +193,8 @@ public class ReviewServiceImpl implements ReviewService {
 
             review.setStatus(ReviewStatus.IN_PROGRESS);
         }
+
+        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(review.getReviewerId());
 
         RecommendationValidationResult validationResult =
                 validationService.validateSubmission(
@@ -216,6 +223,7 @@ public class ReviewServiceImpl implements ReviewService {
                         .reviewId(review.getId())
                         .paperId(review.getPaperId())
                         .reviewerId(review.getReviewerId())
+                        .reviewerEmail(reviewer.getEmail())
                         .recommendation(review.getRecommendation())
                         .overallScore(review.getOverallScore())
                         .submittedAt(review.getSubmittedAt())
@@ -241,6 +249,8 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = lookupService.getReviewById(reviewId);
 
         validationService.validateDecision(review);
+
+        PaperSummaryResponse paper = paperLookupService.getPaperSummary(review.getPaperId());
 
         /*
          * Preserve the previous decision before updating.
@@ -290,6 +300,7 @@ public class ReviewServiceImpl implements ReviewService {
                         .reviewId(review.getId())
                         .paperId(review.getPaperId())
                         .authorId(review.getAuthorId())
+                        .recipientEmail(paper.getAuthorEmail())
                         .decision(review.getDecision())
                         .editorId(currentUserService.getCurrentUser().getId())
                         .decisionAt(review.getDecisionAt())

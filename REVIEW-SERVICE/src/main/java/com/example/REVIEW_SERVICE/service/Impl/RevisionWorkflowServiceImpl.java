@@ -1,12 +1,14 @@
 package com.example.REVIEW_SERVICE.service.Impl;
 
 import com.example.REVIEW_SERVICE.dto.NewRevisionRequest;
+import com.example.REVIEW_SERVICE.dto.PaperSummaryResponse;
 import com.example.REVIEW_SERVICE.dto.events.RevisionRequestedEvent;
 import com.example.REVIEW_SERVICE.entity.Review;
 import com.example.REVIEW_SERVICE.exception.InvalidReviewStateException;
 import com.example.REVIEW_SERVICE.exception.ResourceNotFoundException;
 import com.example.REVIEW_SERVICE.publisher.ReviewEventPublisher;
 import com.example.REVIEW_SERVICE.repository.ReviewRepository;
+import com.example.REVIEW_SERVICE.service.ResearchPaperLookupService;
 import com.example.REVIEW_SERVICE.service.ReviewReassignmentService;
 import com.example.REVIEW_SERVICE.service.RevisionWorkflowService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class RevisionWorkflowServiceImpl implements RevisionWorkflowService {
     private final ReviewRepository reviewRepository;
     private final ReviewReassignmentService reviewReassignmentService;
     private final ReviewEventPublisher reviewEventPublisher;
+    private final ResearchPaperLookupService paperLookupService;
 
     @Override
     public void registerRevision(
@@ -54,10 +57,13 @@ public class RevisionWorkflowServiceImpl implements RevisionWorkflowService {
                 request.getRevisionNumber()
         );
 
+        PaperSummaryResponse paper = paperLookupService.getPaperSummary(request.getPaperId());
+
         reviewEventPublisher.publishRevisionRequested(
                 RevisionRequestedEvent.builder()
                         .paperId(request.getPaperId())
                         .authorId(latestReview.getAuthorId())
+                        .authorEmail(paper.getAuthorEmail())
                         .revisionNumber(request.getRevisionNumber())
                         .submittedAt(LocalDateTime.now())
                         .build()

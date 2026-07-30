@@ -15,6 +15,8 @@ public class RevisionRequestedEvent {
 
     private Long authorId;
 
+    private String authorEmail;
+
     private Integer revisionNumber;
 
     private LocalDateTime submittedAt;

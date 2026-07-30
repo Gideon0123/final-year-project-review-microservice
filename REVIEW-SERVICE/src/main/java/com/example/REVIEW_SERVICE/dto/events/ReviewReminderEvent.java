@@ -17,6 +17,8 @@ public class ReviewReminderEvent {
 
     private Long paperId;
 
+    private String reviewerEmail;
+
     private LocalDateTime deadline;
 
 }

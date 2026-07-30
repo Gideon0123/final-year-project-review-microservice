@@ -17,6 +17,8 @@ public class ReviewDeclinedEvent {
 
     private Long reviewerId;
 
+    private String reviewerEmail;
+
     private String reason;
 
     private LocalDateTime declinedAt;

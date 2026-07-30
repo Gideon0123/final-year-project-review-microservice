@@ -15,6 +15,8 @@ public class ReviewAcceptedEvent {
 
     private Long paperId;
 
+    private String reviewerEmail;
+
     private Long reviewerId;
 
     private LocalDateTime acceptedAt;

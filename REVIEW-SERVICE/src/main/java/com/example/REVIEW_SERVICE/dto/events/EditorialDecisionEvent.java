@@ -20,6 +20,8 @@ public class EditorialDecisionEvent {
 
     private Long authorId;
 
+    private String recipientEmail;
+
     private EditorialDecision decision;
 
     private LocalDateTime decisionAt;
