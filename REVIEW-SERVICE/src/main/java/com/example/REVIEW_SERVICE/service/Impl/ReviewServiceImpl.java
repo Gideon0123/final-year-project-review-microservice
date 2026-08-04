@@ -74,6 +74,14 @@ public class ReviewServiceImpl implements ReviewService {
         );
     }
 
+    private String getReviewerEmail(Long reviewerId) {
+        return authLookupService.getReviewer(reviewerId).getEmail();
+    }
+
+    private String getAuthorEmail(Long paperId) {
+        return paperLookupService.getPaperSummary(paperId).getAuthorEmail();
+    }
+
     @Override
     public ReviewResponse assignReviewer(
             AssignReviewerRequest request
@@ -113,7 +121,7 @@ public class ReviewServiceImpl implements ReviewService {
                         .reviewId(review.getId())
                         .paperId(review.getPaperId())
                         .reviewerId(review.getReviewerId())
-                        .reviewerEmail(reviewer.getEmail())
+                        .reviewerEmail(getReviewerEmail(review.getReviewerId()))
                         .deadline(review.getDeadline())
                         .reviewRound(review.getReviewRound())
                         .revisionNumber(review.getRevisionNumber())
@@ -130,7 +138,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = lookupService.getReviewById(reviewId);
         authorizationService.verifyReviewer(review);
         validationService.validateInvitationAcceptance(review);
-        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(review.getReviewerId());
+//        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(review.getReviewerId());
 
         review.setStatus(ReviewStatus.INVITATION_ACCEPTED);
         review.setAcceptedAt(LocalDateTime.now());
@@ -141,7 +149,7 @@ public class ReviewServiceImpl implements ReviewService {
                         .reviewId(review.getId())
                         .paperId(review.getPaperId())
                         .reviewerId(review.getReviewerId())
-                        .reviewerEmail(reviewer.getEmail())
+                        .reviewerEmail(getReviewerEmail(review.getReviewerId()))
                         .acceptedAt(review.getAcceptedAt())
                         .build()
 
@@ -158,7 +166,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = lookupService.getReviewById(reviewId);
         authorizationService.verifyReviewer(review);
         validationService.validateInvitationDecline(review);
-        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(review.getReviewerId());
+//        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(review.getReviewerId());
 
         review.setStatus(ReviewStatus.INVITATION_DECLINED);
         review.setDeclineReason(request.getReason());
@@ -171,7 +179,7 @@ public class ReviewServiceImpl implements ReviewService {
                         .reviewId(review.getId())
                         .paperId(review.getPaperId())
                         .reviewerId(review.getReviewerId())
-                        .reviewerEmail(reviewer.getEmail())
+                        .reviewerEmail(getReviewerEmail(review.getReviewerId()))
                         .reason(request.getReason())
                         .declinedAt(review.getDeclinedAt())
                         .build()
@@ -194,7 +202,7 @@ public class ReviewServiceImpl implements ReviewService {
             review.setStatus(ReviewStatus.IN_PROGRESS);
         }
 
-        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(review.getReviewerId());
+//        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(review.getReviewerId());
 
         RecommendationValidationResult validationResult =
                 validationService.validateSubmission(
@@ -223,7 +231,7 @@ public class ReviewServiceImpl implements ReviewService {
                         .reviewId(review.getId())
                         .paperId(review.getPaperId())
                         .reviewerId(review.getReviewerId())
-                        .reviewerEmail(reviewer.getEmail())
+                        .reviewerEmail(getReviewerEmail(review.getReviewerId()))
                         .recommendation(review.getRecommendation())
                         .overallScore(review.getOverallScore())
                         .submittedAt(review.getSubmittedAt())
