@@ -6,4 +6,5 @@ public interface ReminderService {
 
     void sendDeadlineReminder(Review review);
 
+    void sendEscalationReminder(Review review);
 }

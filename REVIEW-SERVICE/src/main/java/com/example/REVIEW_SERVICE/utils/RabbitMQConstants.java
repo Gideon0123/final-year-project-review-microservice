@@ -86,4 +86,13 @@ public final class RabbitMQConstants {
     public static final String REVIEW_ACCEPTED_PAPER_ROUTING_KEY =
             "review.paper.accepted";
 
+    public static final String REVIEW_ESCALATION_QUEUE =
+            "review.escalation.queue";
+
+    public static final String REVIEW_ESCALATION_ROUTING_KEY =
+            "review.escalation";
+
+    public static final String REVIEW_ESCALATION_EXCHANGE =
+            REVIEW_EXCHANGE;
+
 }

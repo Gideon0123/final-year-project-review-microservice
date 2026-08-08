@@ -59,4 +59,47 @@ public class ReviewReminderScheduler {
                 reviews.size()
         );
     }
+
+    @Scheduled(cron = "0 0 9 * * *")
+    @Transactional
+    public void sendEscalationReminders() {
+
+        LocalDateTime now = LocalDateTime.now();
+
+        LocalDateTime escalationCutoff =
+                now.minusHours(23);
+
+        List<Review> reviews =
+                reviewRepository.findReviewsNeedingEscalation(
+                        now,
+                        escalationCutoff
+                );
+
+        for (Review review : reviews) {
+
+            try {
+
+                reminderService.sendEscalationReminder(
+                        review
+                );
+
+                review.setLastEscalationSentAt(now);
+
+            } catch (Exception exception) {
+
+                log.error(
+                        "Failed to send escalation for review {}",
+                        review.getId(),
+                        exception
+                );
+            }
+        }
+
+        reviewRepository.saveAll(reviews);
+
+        log.info(
+                "{} escalation reminder(s) processed.",
+                reviews.size()
+        );
+    }
 }
