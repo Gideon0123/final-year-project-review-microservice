@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -37,8 +38,14 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
             Long reviewId,
             MultipartFile file
     ) {
-
         validateFile(file);
+
+        String contentType = file.getContentType();
+        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
+            throw new IllegalArgumentException(
+                    "Unsupported file type: " + contentType
+            );
+        }
 
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(
@@ -88,6 +95,17 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
                 saved
         );
     }
+
+    private static final Set<String> ALLOWED_CONTENT_TYPES =
+            Set.of(
+                    "application/pdf",
+                    "application/msword",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "application/vnd.ms-excel",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "image/jpeg",
+                    "image/png"
+            );
 
     private void validateFile(
             MultipartFile file
