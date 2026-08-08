@@ -95,4 +95,8 @@ public final class RabbitMQConstants {
     public static final String REVIEW_ESCALATION_EXCHANGE =
             REVIEW_EXCHANGE;
 
+    public static final String REVIEW_DL_ROUTING_KEY = "review.dead";
+
+    public static final String REVIEW_DLQ = "review.deadletter.queue";
+
 }

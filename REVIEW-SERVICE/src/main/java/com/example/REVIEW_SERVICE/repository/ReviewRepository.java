@@ -164,19 +164,16 @@ AND r.reviewRound =
     @Query("""
     SELECT r
     FROM Review r
-    WHERE r.status IN (
-        com.example.review_service.enums.ReviewStatus.PENDING_INVITATION,
-        com.example.review_service.enums.INVITATION_ACCEPTED,
-        com.example.review_service.enums.IN_PROGRESS
-    )
+    WHERE r.status IN :statuses
     AND r.deadline > :now
     AND r.deadline <= :reminderThreshold
     AND (
         r.lastReminderSentAt IS NULL
         OR r.lastReminderSentAt <= :reminderCutoff
     )
-""")
+    """)
     List<Review> findReviewsNeedingReminder(
+            @Param("statuses") Collection<ReviewStatus> statuses,
             @Param("now") LocalDateTime now,
             @Param("reminderThreshold") LocalDateTime reminderThreshold,
             @Param("reminderCutoff") LocalDateTime reminderCutoff
@@ -185,18 +182,15 @@ AND r.reviewRound =
     @Query("""
     SELECT r
     FROM Review r
-    WHERE r.status IN (
-        com.example.review_service.enums.ReviewStatus.PENDING_INVITATION,
-        com.example.review_service.enums.ReviewStatus.INVITATION_ACCEPTED,
-        com.example.review_service.enums.ReviewStatus.IN_PROGRESS
-    )
+    WHERE r.status IN :statuses
     AND r.deadline < :now
     AND (
         r.lastEscalationSentAt IS NULL
         OR r.lastEscalationSentAt <= :escalationCutoff
     )
-""")
+    """)
     List<Review> findReviewsNeedingEscalation(
+            @Param("statuses") Collection<ReviewStatus> statuses,
             @Param("now") LocalDateTime now,
             @Param("escalationCutoff") LocalDateTime escalationCutoff
     );

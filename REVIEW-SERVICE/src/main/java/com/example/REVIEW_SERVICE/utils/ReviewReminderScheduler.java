@@ -1,6 +1,7 @@
 package com.example.REVIEW_SERVICE.utils;
 
 import com.example.REVIEW_SERVICE.entity.Review;
+import com.example.REVIEW_SERVICE.enums.ReviewStatus;
 import com.example.REVIEW_SERVICE.repository.ReviewRepository;
 import com.example.REVIEW_SERVICE.service.ReminderService;
 import lombok.RequiredArgsConstructor;
@@ -26,36 +27,47 @@ public class ReviewReminderScheduler {
 
         LocalDateTime now = LocalDateTime.now();
 
-        LocalDateTime reminderThreshold = now.plusDays(3);
+        /*
+         * Send reminders for reviews whose deadline is
+         * within the next 3 days.
+         */
+        LocalDateTime reminderThreshold =
+                now.plusDays(3);
 
-        LocalDateTime reminderCutoff = now.minusHours(23);
+        /*
+         * Prevent the same review from receiving a reminder
+         * too frequently.
+         *
+         * Here we allow one reminder every 24 hours.
+         */
+        LocalDateTime reminderCutoff =
+                now.minusDays(1);
+
+        List<ReviewStatus> activeStatuses = List.of(
+                ReviewStatus.PENDING_INVITATION,
+                ReviewStatus.INVITATION_ACCEPTED,
+                ReviewStatus.IN_PROGRESS
+        );
 
         List<Review> reviews =
                 reviewRepository.findReviewsNeedingReminder(
+                        activeStatuses,
                         now,
                         reminderThreshold,
                         reminderCutoff
                 );
 
         for (Review review : reviews) {
-            try {
-                reminderService.sendDeadlineReminder(review);
 
-                review.setLastReminderSentAt(now);
+            reminderService.sendDeadlineReminder(review);
 
-            } catch (Exception exception) {
-                log.error(
-                        "Failed to send reminder for review {}",
-                        review.getId(),
-                        exception
-                );
-
-            }
+            review.setLastReminderSentAt(now);
         }
 
         reviewRepository.saveAll(reviews);
+
         log.info(
-                "Deadline reminder scheduler completed. {} reminder(s) processed.",
+                "{} review deadline reminder(s) sent.",
                 reviews.size()
         );
     }
@@ -66,11 +78,17 @@ public class ReviewReminderScheduler {
 
         LocalDateTime now = LocalDateTime.now();
 
-        LocalDateTime escalationCutoff =
-                now.minusHours(23);
+        LocalDateTime escalationCutoff = now.minusHours(23);
+
+        List<ReviewStatus> escalationStatuses = List.of(
+                ReviewStatus.PENDING_INVITATION,
+                ReviewStatus.INVITATION_ACCEPTED,
+                ReviewStatus.IN_PROGRESS
+        );
 
         List<Review> reviews =
                 reviewRepository.findReviewsNeedingEscalation(
+                        escalationStatuses,
                         now,
                         escalationCutoff
                 );
@@ -78,7 +96,6 @@ public class ReviewReminderScheduler {
         for (Review review : reviews) {
 
             try {
-
                 reminderService.sendEscalationReminder(
                         review
                 );
