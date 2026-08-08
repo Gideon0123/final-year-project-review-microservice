@@ -158,4 +158,12 @@ public class Review {
 
     private LocalDateTime lastEscalationSentAt;
 
+    @OneToMany(
+            mappedBy = "review",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private List<ReviewAttachment> attachments = new ArrayList<>();
+
 }

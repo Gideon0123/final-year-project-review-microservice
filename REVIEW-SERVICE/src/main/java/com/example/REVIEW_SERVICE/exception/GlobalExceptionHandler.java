@@ -59,6 +59,14 @@ public class GlobalExceptionHandler {
         return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), request);
     }
 
+    @ExceptionHandler(StorageException.class)
+    public ResponseEntity<ApiResponse<Object>> handleStorageError(
+            StorageException ex,
+            HttpServletRequest request
+    ) {
+        return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value(), request);
+    }
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleUserNotFound(
             UserNotFoundException ex,
