@@ -28,23 +28,35 @@ public class ReviewReminderScheduler {
 
         LocalDateTime reminderThreshold = now.plusDays(3);
 
-        List<Review> reviews = reviewRepository.findReviewsNeedingReminder(
-                reminderThreshold,
-                now
-        );
+        LocalDateTime reminderCutoff = now.minusHours(23);
+
+        List<Review> reviews =
+                reviewRepository.findReviewsNeedingReminder(
+                        now,
+                        reminderThreshold,
+                        reminderCutoff
+                );
 
         for (Review review : reviews) {
-            reminderService.sendDeadlineReminder(review);
-            review.setLastReminderSentAt(now);
+            try {
+                reminderService.sendDeadlineReminder(review);
+
+                review.setLastReminderSentAt(now);
+
+            } catch (Exception exception) {
+                log.error(
+                        "Failed to send reminder for review {}",
+                        review.getId(),
+                        exception
+                );
+
+            }
         }
 
         reviewRepository.saveAll(reviews);
-
         log.info(
-                "{} reminder(s) sent.",
+                "Deadline reminder scheduler completed. {} reminder(s) processed.",
                 reviews.size()
         );
-
     }
-
 }

@@ -156,4 +156,6 @@ public class Review {
     @Builder.Default
     private List<ReviewDecisionHistory> decisionHistory = new ArrayList<>();
 
+    private LocalDateTime lastEscalationSentAt;
+
 }
