@@ -1,5 +1,6 @@
 package com.example.REVIEW_SERVICE.service;
 
+import com.example.REVIEW_SERVICE.dto.AttachmentDownload;
 import com.example.REVIEW_SERVICE.dto.ReviewAttachmentResponse;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,14 +15,14 @@ public interface ReviewAttachmentService {
     );
 
     ReviewAttachmentResponse getAttachmentMetadata(
-            Long attachmentId
+            Long attachmentId, Long reviewId
     );
 
     boolean attachmentExists(
             Long attachmentId
     );
 
-    InputStream downloadAttachment(
+    AttachmentDownload downloadAttachment(
             Long attachmentId
     );
 }

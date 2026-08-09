@@ -41,6 +41,31 @@ public class ReviewAttachmentController {
                         ApiResponse.<ReviewAttachmentResponse>builder()
                                 .success(true)
                                 .message("Review Attachment Uploaded successfully successfully.")
+                                .status(HttpStatus.CREATED.value())
+                                .data(response)
+                                .path(httpRequest.getRequestURI())
+                                .traceId(TraceIdUtil.generate())
+                                .timestamp(LocalDateTime.now())
+                                .build()
+                );
+    }
+
+    @GetMapping("/{reviewId}/attachments/{attachmentId}")
+    public ResponseEntity<ApiResponse<ReviewAttachmentResponse>> getAttachmentMetadata(
+            @PathVariable Long reviewId,
+            @PathVariable Long attachmentId,
+            HttpServletRequest httpRequest
+    ) {
+        ReviewAttachmentResponse response =
+                reviewAttachmentService.getAttachmentMetadata(
+                                attachmentId, reviewId
+                        );
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(
+                        ApiResponse.<ReviewAttachmentResponse>builder()
+                                .success(true)
+                                .message("Review Attachment metaData Fetched successfully.")
                                 .status(HttpStatus.OK.value())
                                 .data(response)
                                 .path(httpRequest.getRequestURI())

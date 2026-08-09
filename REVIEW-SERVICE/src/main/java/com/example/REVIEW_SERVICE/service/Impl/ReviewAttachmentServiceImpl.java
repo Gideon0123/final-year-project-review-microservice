@@ -1,5 +1,6 @@
 package com.example.REVIEW_SERVICE.service.Impl;
 
+import com.example.REVIEW_SERVICE.dto.AttachmentDownload;
 import com.example.REVIEW_SERVICE.dto.ReviewAttachmentResponse;
 import com.example.REVIEW_SERVICE.entity.Review;
 import com.example.REVIEW_SERVICE.entity.ReviewAttachment;
@@ -95,17 +96,19 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
     @Override
     @Transactional(readOnly = true)
     public ReviewAttachmentResponse getAttachmentMetadata(
-            Long attachmentId
+            Long attachmentId, Long reviewId
     ) {
-        ReviewAttachment attachment = reviewAttachmentRepository
-                .findById(attachmentId)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException(
-                                "Attachment not found with id: "
-                                        + attachmentId
+        ReviewAttachment attachment =
+                reviewAttachmentRepository
+                        .findByIdAndReviewId(
+                                attachmentId,
+                                reviewId
                         )
-                );
-
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException(
+                                        "Attachment not found for this review"
+                                )
+                        );
         return reviewAttachmentMapper.toResponse(attachment);
     }
 
@@ -128,32 +131,33 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
 
     @Override
     @Transactional(readOnly = true)
-    public InputStream downloadAttachment(
+    public AttachmentDownload downloadAttachment(
             Long attachmentId
     ) {
         ReviewAttachment attachment =
-                reviewAttachmentRepository
-                        .findById(attachmentId)
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
-                                        "Attachment not found with id: "
-                                                + attachmentId
+                reviewAttachmentRepository.findById(attachmentId)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Attachment not found with id: "
+                                        + attachmentId
                                 )
                         );
 
-        boolean exists = storageService.exists(
-                attachment.getObjectKey()
-        );
-
-        if (!exists) {
+        if (!storageService.exists(attachment.getObjectKey())) {
             throw new ResourceNotFoundException(
                     "Attachment file not found in storage"
             );
         }
 
-        return storageService.download(
+        InputStream inputStream = storageService.download(
                 attachment.getObjectKey()
         );
+
+        return AttachmentDownload.builder()
+                .inputStream(inputStream)
+                .filename(attachment.getOriginalFilename())
+                .contentType(attachment.getContentType())
+                .fileSize(attachment.getFileSize())
+                .build();
     }
 
     private void validateFile(
