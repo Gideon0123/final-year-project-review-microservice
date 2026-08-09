@@ -2,15 +2,16 @@ package com.example.REVIEW_SERVICE.service.Impl;
 
 import com.example.REVIEW_SERVICE.exception.StorageException;
 import com.example.REVIEW_SERVICE.service.StorageService;
-import io.minio.GetObjectArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
-import io.minio.StatObjectArgs;
+import io.minio.*;
 import io.minio.errors.ErrorResponseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+//import io.minio.http.Method;
+
+import java.util.concurrent.TimeUnit;
 
 import java.io.InputStream;
 
@@ -22,6 +23,9 @@ public class MinioStorageService implements StorageService {
 
     @Value("${minio.bucket.review-attachments}")
     private String bucketName;
+
+    @Value("${minio.presigned-url-expiry-minutes:15}")
+    private int presignedUrlExpiryMinutes;
 
     @Override
     public void upload(
@@ -118,11 +122,28 @@ public class MinioStorageService implements StorageService {
     }
 
     @Override
-    public String generateUrl(
+    public String generatePresignedUrl(
             String objectKey
     ) {
+        try {
+            return minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Http.Method.GET)
+                            .bucket(bucketName)
+                            .object(objectKey)
+                            .expiry(
+                                    presignedUrlExpiryMinutes,
+                                    TimeUnit.MINUTES
+                            )
+                            .build()
+            );
 
-        // We'll implement this properly below.
-        return null;
+        } catch (Exception exception) {
+
+            throw new StorageException(
+                    "Failed to generate presigned URL",
+                    exception
+            );
+        }
     }
 }

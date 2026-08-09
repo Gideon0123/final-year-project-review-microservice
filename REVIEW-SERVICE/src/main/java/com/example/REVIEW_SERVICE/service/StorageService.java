@@ -9,5 +9,5 @@ public interface StorageService {
     void upload(String objectKey, MultipartFile file);
     InputStream download(String objectKey);
     boolean exists(String objectKey);
-    String generateUrl(String objectKey);
+    String generatePresignedUrl(String objectKey);
 }
