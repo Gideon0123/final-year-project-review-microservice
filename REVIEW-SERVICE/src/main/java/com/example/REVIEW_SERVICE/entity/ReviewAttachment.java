@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(
@@ -24,8 +23,8 @@ import java.util.UUID;
 public class ReviewAttachment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
@@ -34,12 +33,6 @@ public class ReviewAttachment {
     )
     private Review review;
 
-    /**
-     * Original filename supplied by the user.
-     *
-     * Example:
-     * reviewer-comments.pdf
-     */
     @Column(
             name = "original_filename",
             nullable = false,
@@ -47,12 +40,6 @@ public class ReviewAttachment {
     )
     private String originalFilename;
 
-    /**
-     * The actual object name used inside MinIO.
-     *
-     * Example:
-     * reviews/5d8.../8a7...-reviewer-comments.pdf
-     */
     @Column(
             name = "object_key",
             nullable = false,
@@ -61,12 +48,6 @@ public class ReviewAttachment {
     )
     private String objectKey;
 
-    /**
-     * MIME type.
-     *
-     * Example:
-     * application/pdf
-     */
     @Column(
             name = "content_type",
             nullable = false,
@@ -74,18 +55,12 @@ public class ReviewAttachment {
     )
     private String contentType;
 
-    /**
-     * Size of uploaded file in bytes.
-     */
     @Column(
             name = "file_size",
             nullable = false
     )
     private Long fileSize;
 
-    /**
-     * MinIO bucket containing the object.
-     */
     @Column(
             name = "bucket_name",
             nullable = false,
@@ -102,8 +77,6 @@ public class ReviewAttachment {
 
     @PrePersist
     protected void onCreate() {
-
         createdAt = LocalDateTime.now();
-
     }
 }

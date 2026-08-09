@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,6 +25,17 @@ import java.util.UUID;
 public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
 
     private static final long MAX_FILE_SIZE = 20 * 1024 * 1024;
+    private static final Set<String> ALLOWED_CONTENT_TYPES =
+            Set.of(
+                    "application/pdf",
+                    "application/msword",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "application/vnd.ms-excel",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "image/jpeg",
+                    "image/png"
+            );
+
     private final ReviewRepository reviewRepository;
     private final ReviewAttachmentRepository reviewAttachmentRepository;
     private final StorageService storageService;
@@ -40,16 +52,8 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
     ) {
         validateFile(file);
 
-        String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
-            throw new IllegalArgumentException(
-                    "Unsupported file type: " + contentType
-            );
-        }
-
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                                 "Review not found with id: "
                                         + reviewId
                         )
@@ -62,15 +66,12 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
                                 : "unnamed-file"
                 );
 
-        String objectKey =  generateObjectKey(
+        String objectKey = generateObjectKey(
                 reviewId,
                 originalFilename
         );
 
-        storageService.upload(
-                objectKey,
-                file
-        );
+        storageService.upload(objectKey, file);
 
         ReviewAttachment attachment =
                 ReviewAttachment.builder()
@@ -86,66 +87,115 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
                         .bucketName(bucketName)
                         .build();
 
-        ReviewAttachment saved =
-                reviewAttachmentRepository.save(
-                        attachment
+        ReviewAttachment saved = reviewAttachmentRepository.save(attachment);
+
+        return reviewAttachmentMapper.toResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReviewAttachmentResponse getAttachmentMetadata(
+            Long attachmentId
+    ) {
+        ReviewAttachment attachment = reviewAttachmentRepository
+                .findById(attachmentId)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Attachment not found with id: "
+                                        + attachmentId
+                        )
                 );
 
-        return reviewAttachmentMapper.toResponse(
-                saved
+        return reviewAttachmentMapper.toResponse(attachment);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean attachmentExists(
+            Long attachmentId
+    ) {
+        ReviewAttachment attachment = reviewAttachmentRepository.findById(attachmentId)
+                .orElse(null);
+
+        if (attachment == null) {
+            return false;
+        }
+
+        return storageService.exists(
+                attachment.getObjectKey()
         );
     }
 
-    private static final Set<String> ALLOWED_CONTENT_TYPES =
-            Set.of(
-                    "application/pdf",
-                    "application/msword",
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    "application/vnd.ms-excel",
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    "image/jpeg",
-                    "image/png"
+    @Override
+    @Transactional(readOnly = true)
+    public InputStream downloadAttachment(
+            Long attachmentId
+    ) {
+        ReviewAttachment attachment =
+                reviewAttachmentRepository
+                        .findById(attachmentId)
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException(
+                                        "Attachment not found with id: "
+                                                + attachmentId
+                                )
+                        );
+
+        boolean exists = storageService.exists(
+                attachment.getObjectKey()
+        );
+
+        if (!exists) {
+            throw new ResourceNotFoundException(
+                    "Attachment file not found in storage"
             );
+        }
+
+        return storageService.download(
+                attachment.getObjectKey()
+        );
+    }
 
     private void validateFile(
             MultipartFile file
     ) {
-
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "File must not be empty"
-            );
+            throw new IllegalArgumentException("File must not be empty");
         }
 
         if (file.getSize() > MAX_FILE_SIZE) {
-
-            throw new IllegalArgumentException(
-                    "File size must not exceed 20 MB"
-            );
+            throw new IllegalArgumentException("File size must not exceed 20 MB");
         }
 
         String filename = file.getOriginalFilename();
 
         if (filename == null || filename.isBlank()) {
+            throw new IllegalArgumentException("File must have a valid filename");
+        }
+
+        String contentType = file.getContentType();
+
+        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
             throw new IllegalArgumentException(
-                    "File must have a valid filename"
+                    "Unsupported file type: "
+                            + contentType
             );
         }
     }
 
     private String generateObjectKey(
-            UUID reviewId,
+            Long reviewId,
             String originalFilename
     ) {
         String extension = "";
         int extensionIndex = originalFilename.lastIndexOf('.');
 
-        if (extensionIndex > 0
-                && extensionIndex
-                < originalFilename.length() - 1
+        if (
+                extensionIndex > 0
+                        && extensionIndex
+                        < originalFilename.length() - 1
         ) {
-            extension = originalFilename.substring(
-                    extensionIndex).toLowerCase();
+            extension = originalFilename.substring(extensionIndex).toLowerCase();
         }
 
         return "reviews/"

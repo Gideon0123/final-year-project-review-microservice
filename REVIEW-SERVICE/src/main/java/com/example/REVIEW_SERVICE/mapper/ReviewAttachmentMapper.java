@@ -8,6 +8,11 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ReviewAttachmentMapper {
 
-    @Mapping(target = "reviewId", source = "review.id")
-    ReviewAttachmentResponse toResponse(ReviewAttachment attachment);
+    @Mapping(
+            target = "reviewId",
+            source = "review.id"
+    )
+    ReviewAttachmentResponse toResponse(
+            ReviewAttachment attachment
+    );
 }

@@ -2,12 +2,17 @@ package com.example.REVIEW_SERVICE.service.Impl;
 
 import com.example.REVIEW_SERVICE.exception.StorageException;
 import com.example.REVIEW_SERVICE.service.StorageService;
+import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.StatObjectArgs;
+import io.minio.errors.ErrorResponseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.InputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -42,11 +47,82 @@ public class MinioStorageService implements StorageService {
             );
 
         } catch (Exception exception) {
-
             throw new StorageException(
                     "Failed to upload file to MinIO",
                     exception
             );
         }
+    }
+
+    @Override
+    public InputStream download(
+            String objectKey
+    ) {
+
+        try {
+
+            return minioClient.getObject(
+                    GetObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectKey)
+                            .build()
+            );
+
+        } catch (Exception exception) {
+
+            throw new StorageException(
+                    "Failed to download file from MinIO",
+                    exception
+            );
+        }
+    }
+
+    @Override
+    public boolean exists(
+            String objectKey
+    ) {
+
+        try {
+
+            minioClient.statObject(
+                    StatObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectKey)
+                            .build()
+            );
+
+            return true;
+
+        } catch (
+                ErrorResponseException exception
+        ) {
+            if (
+                    exception.errorResponse()
+                            .code()
+                            .equals("NoSuchKey")
+            ) {
+                return false;
+            }
+
+            throw new StorageException(
+                    "Failed to check whether object exists",
+                    exception
+            );
+
+        } catch (Exception exception) {
+            throw new StorageException(
+                    "Failed to check whether object exists",
+                    exception
+            );
+        }
+    }
+
+    @Override
+    public String generateUrl(
+            String objectKey
+    ) {
+
+        // We'll implement this properly below.
+        return null;
     }
 }
