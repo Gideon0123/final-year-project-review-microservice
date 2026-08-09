@@ -4,9 +4,6 @@ import com.example.REVIEW_SERVICE.dto.AttachmentDownload;
 import com.example.REVIEW_SERVICE.dto.ReviewAttachmentResponse;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
-import java.util.UUID;
-
 public interface ReviewAttachmentService {
 
     ReviewAttachmentResponse uploadAttachment(
@@ -26,5 +23,10 @@ public interface ReviewAttachmentService {
     AttachmentDownload downloadAttachment(
             Long attachmentId,
             Long reviewId
+    );
+
+    String generateAttachmentUrl(
+            Long reviewId,
+            Long attachmentId
     );
 }

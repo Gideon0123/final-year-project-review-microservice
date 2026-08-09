@@ -146,4 +146,31 @@ public class ReviewAttachmentController {
                                 .build()
                 );
     }
+
+    @GetMapping(
+            "/{reviewId}/attachments/{attachmentId}/url"
+    )
+    public ResponseEntity<ApiResponse<String>> generateAttachmentUrl(
+            @PathVariable Long reviewId,
+            @PathVariable Long attachmentId,
+            HttpServletRequest httpRequest
+    ) {
+        String url = reviewAttachmentService.generateAttachmentUrl(
+                reviewId,
+                attachmentId
+        );
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(
+                        ApiResponse.<String >builder()
+                                .success(true)
+                                .message("Document URL")
+                                .status(HttpStatus.OK.value())
+                                .data(url)
+                                .path(httpRequest.getRequestURI())
+                                .traceId(TraceIdUtil.generate())
+                                .timestamp(LocalDateTime.now())
+                                .build()
+                );
+    }
 }

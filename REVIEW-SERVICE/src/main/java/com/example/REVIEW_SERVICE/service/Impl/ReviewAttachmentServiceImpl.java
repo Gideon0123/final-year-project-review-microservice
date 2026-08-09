@@ -165,6 +165,33 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
                 .build();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public String generateAttachmentUrl(
+            Long reviewId,
+            Long attachmentId
+    ) {
+        ReviewAttachment attachment =
+                reviewAttachmentRepository.findByIdAndReviewId(
+                                attachmentId,
+                                reviewId
+                        )
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                        "Attachment not found for this review"
+                                )
+                        );
+
+        if (!storageService.exists(attachment.getObjectKey())) {
+            throw new ResourceNotFoundException(
+                    "Attachment file not found in storage"
+            );
+        }
+
+        return storageService.generatePresignedUrl(
+                attachment.getObjectKey()
+        );
+    }
+
     private void validateFile(
             MultipartFile file
     ) {
