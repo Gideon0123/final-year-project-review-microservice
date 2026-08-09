@@ -99,13 +99,11 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
             Long attachmentId, Long reviewId
     ) {
         ReviewAttachment attachment =
-                reviewAttachmentRepository
-                        .findByIdAndReviewId(
+                reviewAttachmentRepository.findByIdAndReviewId(
                                 attachmentId,
                                 reviewId
                         )
-                        .orElseThrow(
-                                () -> new ResourceNotFoundException(
+                        .orElseThrow(() -> new ResourceNotFoundException(
                                         "Attachment not found for this review"
                                 )
                         );
@@ -115,10 +113,15 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
     @Override
     @Transactional(readOnly = true)
     public boolean attachmentExists(
+            Long reviewId,
             Long attachmentId
     ) {
-        ReviewAttachment attachment = reviewAttachmentRepository.findById(attachmentId)
-                .orElse(null);
+        ReviewAttachment attachment =
+                reviewAttachmentRepository.findByIdAndReviewId(
+                                attachmentId,
+                                reviewId
+                        )
+                        .orElse(null);
 
         if (attachment == null) {
             return false;
@@ -132,13 +135,15 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
     @Override
     @Transactional(readOnly = true)
     public AttachmentDownload downloadAttachment(
-            Long attachmentId
+            Long attachmentId, Long reviewId
     ) {
         ReviewAttachment attachment =
-                reviewAttachmentRepository.findById(attachmentId)
+                reviewAttachmentRepository.findByIdAndReviewId(
+                                attachmentId,
+                                reviewId
+                        )
                         .orElseThrow(() -> new ResourceNotFoundException(
-                                "Attachment not found with id: "
-                                        + attachmentId
+                                        "Attachment not found for this review"
                                 )
                         );
 

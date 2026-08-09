@@ -19,10 +19,12 @@ public interface ReviewAttachmentService {
     );
 
     boolean attachmentExists(
+            Long reviewId,
             Long attachmentId
     );
 
     AttachmentDownload downloadAttachment(
-            Long attachmentId
+            Long attachmentId,
+            Long reviewId
     );
 }
