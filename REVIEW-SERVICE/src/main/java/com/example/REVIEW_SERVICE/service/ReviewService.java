@@ -20,6 +20,7 @@ public interface ReviewService {
     );
     ReviewResponse getReview(Long reviewId);
     List<RevisionHistoryResponse> getRevisionHistory(Long paperId);
+    void deleteReview(Long reviewId);
 //    EditorDashboardResponse getDashboard(Long paperId);
 
 }

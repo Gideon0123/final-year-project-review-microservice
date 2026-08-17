@@ -6,12 +6,14 @@ import com.example.REVIEW_SERVICE.entity.CurrentUser;
 import com.example.REVIEW_SERVICE.entity.Review;
 import com.example.REVIEW_SERVICE.enums.EditorialDecision;
 import com.example.REVIEW_SERVICE.enums.ReviewStatus;
+import com.example.REVIEW_SERVICE.exception.ReviewNotFoundException;
 import com.example.REVIEW_SERVICE.mapper.ReviewMapper;
 import com.example.REVIEW_SERVICE.payload.PagedResponse;
 import com.example.REVIEW_SERVICE.publisher.ReviewEventPublisher;
 import com.example.REVIEW_SERVICE.repository.ReviewRepository;
 import com.example.REVIEW_SERVICE.service.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +26,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional
 public class ReviewServiceImpl implements ReviewService {
 
@@ -38,6 +41,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRoundService reviewRoundService;
     private final ResearchPaperLookupService paperLookupService;
     private final ResearchStatusService researchStatusService;
+    private final ReviewAttachmentService reviewAttachmentService;
     private final ReviewDecisionHistoryService decisionHistoryService;
     private final RevisionHistoryService revisionHistoryService;
     private final ReviewEventPublisher reviewEventPublisher;
@@ -409,6 +413,25 @@ public class ReviewServiceImpl implements ReviewService {
 
         return revisionHistoryService.getRevisionHistory(
                 paperId
+        );
+    }
+
+    @Override
+    @Transactional
+    public void deleteReview(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                        .orElseThrow(() -> new ReviewNotFoundException(
+                                "Review not found"
+                                )
+                        );
+
+        reviewAttachmentService.deleteAllReviewAttachments(reviewId);
+
+        reviewRepository.delete(review);
+
+        log.info(
+                "Review deleted successfully. reviewId={}",
+                reviewId
         );
     }
 

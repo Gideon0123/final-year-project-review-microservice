@@ -320,6 +320,25 @@ public class ReviewController {
 
     }
 
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<ApiResponse<Void>> deleteReview(
+            @PathVariable Long reviewId,
+            HttpServletRequest request
+    ) {
+        reviewService.deleteReview(reviewId);
+
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
+                .success(true)
+                .message("Review deleted successfully")
+                .status(HttpStatus.OK.value())
+                .path(request.getRequestURI())
+                .traceId(TraceIdUtil.generate())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
 //    @PreAuthorize("hasRole('ADMIN')")
 //    @GetMapping("/dashboard/{paperId}")
 //    public ResponseEntity<ApiResponse<EditorDashboardResponse>> getEditorDashboard(
