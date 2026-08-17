@@ -173,4 +173,16 @@ public class ReviewAttachmentController {
                                 .build()
                 );
     }
+
+    @DeleteMapping("/{attachmentId}")
+    public ResponseEntity<Void> deleteAttachment(
+            @PathVariable Long attachmentId
+    ) {
+
+        reviewAttachmentService.deleteAttachment(
+                attachmentId
+        );
+
+        return ResponseEntity.noContent().build();
+    }
 }

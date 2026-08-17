@@ -29,4 +29,8 @@ public interface ReviewAttachmentService {
             Long reviewId,
             Long attachmentId
     );
+
+    void deleteAttachment(Long attachmentId);
+
+    void deleteAllReviewAttachments(Long reviewId);
 }

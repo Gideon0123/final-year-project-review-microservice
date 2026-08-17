@@ -10,4 +10,5 @@ public interface StorageService {
     InputStream download(String objectKey);
     boolean exists(String objectKey);
     String generatePresignedUrl(String objectKey);
+    void delete(String objectKey);
 }

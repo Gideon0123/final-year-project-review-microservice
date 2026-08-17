@@ -1,10 +1,13 @@
 package com.example.REVIEW_SERVICE.service.Impl;
 
+import com.example.REVIEW_SERVICE.exception.FileStorageException;
 import com.example.REVIEW_SERVICE.exception.StorageException;
 import com.example.REVIEW_SERVICE.service.StorageService;
 import io.minio.*;
 import io.minio.errors.ErrorResponseException;
+import io.minio.errors.MinioException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.io.InputStream;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MinioStorageService implements StorageService {
 
@@ -143,6 +147,47 @@ public class MinioStorageService implements StorageService {
             throw new StorageException(
                     "Failed to generate presigned URL",
                     exception
+            );
+        }
+    }
+
+    @Override
+    public void delete(String objectKey) {
+
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectKey)
+                            .build()
+            );
+
+        } catch (MinioException e) {
+
+            log.error(
+                    "Failed to delete object from MinIO. bucket={}, objectKey={}",
+                    bucketName,
+                    objectKey,
+                    e
+            );
+
+            throw new FileStorageException(
+                    "Failed to delete file from storage",
+                    e
+            );
+
+        } catch (Exception e) {
+
+            log.error(
+                    "Unexpected error while deleting object from MinIO. bucket={}, objectKey={}",
+                    bucketName,
+                    objectKey,
+                    e
+            );
+
+            throw new FileStorageException(
+                    "Unexpected storage error while deleting file",
+                    e
             );
         }
     }

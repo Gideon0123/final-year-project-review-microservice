@@ -4,6 +4,7 @@ import com.example.REVIEW_SERVICE.dto.AttachmentDownload;
 import com.example.REVIEW_SERVICE.dto.ReviewAttachmentResponse;
 import com.example.REVIEW_SERVICE.entity.Review;
 import com.example.REVIEW_SERVICE.entity.ReviewAttachment;
+import com.example.REVIEW_SERVICE.exception.FileStorageException;
 import com.example.REVIEW_SERVICE.exception.ResourceNotFoundException;
 import com.example.REVIEW_SERVICE.mapper.ReviewAttachmentMapper;
 import com.example.REVIEW_SERVICE.repository.ReviewAttachmentRepository;
@@ -11,6 +12,7 @@ import com.example.REVIEW_SERVICE.repository.ReviewRepository;
 import com.example.REVIEW_SERVICE.service.ReviewAttachmentService;
 import com.example.REVIEW_SERVICE.service.StorageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +20,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
 
@@ -190,6 +194,61 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
         return storageService.generatePresignedUrl(
                 attachment.getObjectKey()
         );
+    }
+
+    @Override
+    @Transactional
+    public void deleteAttachment(Long attachmentId) {
+
+        ReviewAttachment attachment = reviewAttachmentRepository.findById(attachmentId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                                "Review attachment not found: "
+                                        + attachmentId
+                        )
+                );
+
+        String objectKey = attachment.getObjectKey();
+
+        /*
+         * Delete the physical object first.
+         *
+         * If MinIO fails, an exception is thrown and the database
+         * metadata is NOT deleted.
+         */
+        storageService.delete(objectKey);
+
+        /*
+         * Only delete database metadata after the storage
+         * deletion has succeeded.
+         */
+        reviewAttachmentRepository.delete(attachment);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllReviewAttachments(Long reviewId) {
+
+        List<ReviewAttachment> attachments = reviewAttachmentRepository.findAllByReviewId(reviewId);
+        for (ReviewAttachment attachment : attachments) {
+            try {
+                storageService.delete(attachment.getObjectKey());
+
+            } catch (Exception ex) {
+
+                log.error(
+                        "Failed deleting attachment from storage. reviewId={}, attachmentId={}",
+                        reviewId,
+                        attachment.getId(),
+                        ex
+                );
+
+                throw new FileStorageException(
+                        "Failed deleting review attachments"
+                );
+            }
+        }
+
+        reviewAttachmentRepository.deleteAll(attachments);
     }
 
     private void validateFile(

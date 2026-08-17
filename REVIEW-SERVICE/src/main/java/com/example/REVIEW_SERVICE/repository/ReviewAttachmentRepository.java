@@ -15,4 +15,6 @@ public interface ReviewAttachmentRepository
             Long attachmentId,
             Long reviewId
     );
+
+    List<ReviewAttachment> findAllByReviewId(Long reviewId);
 }
