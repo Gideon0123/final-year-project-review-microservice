@@ -412,31 +412,4 @@ public class ReviewServiceImpl implements ReviewService {
         );
     }
 
-//    @Override
-//    public EditorDashboardResponse getDashboard(Long paperId) {
-//        PaperSummaryResponse paper = paperLookupService.getPaperSummary(
-//                paperId
-//        );
-//
-//        List<Review> reviews = lookupService.getCurrentReviews(
-//                paperId
-//        );
-//
-//        return EditorDashboardResponse.builder()
-//                .paperId(paper.getId())
-//                .title(paper.getTitle())
-//                .status(paper.getStatus())
-//                .currentRevision(paper.getRevisionNumber())
-//                .currentRound(
-//                        reviews.isEmpty()
-//                                ? 0
-//                                : reviews.getFirst().getReviewRound()
-//                )
-//                .activeReviews(
-//                        reviews.stream()
-//                                .map(this::toSummary)
-//                                .toList()
-//                )
-//                .build();
-//    }
 }
