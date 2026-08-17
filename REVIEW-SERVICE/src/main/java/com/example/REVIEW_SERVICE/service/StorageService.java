@@ -3,6 +3,7 @@ package com.example.REVIEW_SERVICE.service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.List;
 
 public interface StorageService {
 
@@ -11,4 +12,5 @@ public interface StorageService {
     boolean exists(String objectKey);
     String generatePresignedUrl(String objectKey);
     void delete(String objectKey);
+    List<String> listObjects(String prefix);
 }

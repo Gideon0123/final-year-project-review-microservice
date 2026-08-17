@@ -1,13 +1,14 @@
 package com.example.REVIEW_SERVICE.service;
 
-import com.example.REVIEW_SERVICE.entity.ReviewAttachment;
 import com.example.REVIEW_SERVICE.repository.ReviewAttachmentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -18,20 +19,23 @@ public class AttachmentReconciliationService {
     private final StorageService storageService;
 
     @Transactional
-    public void removeBrokenMetadata() {
+    public void removeOrphanedObjects() {
 
-        List<ReviewAttachment> attachments = reviewAttachmentRepository.findAll();
+        List<String> databaseKeys = reviewAttachmentRepository
+                .findAllObjectKeys();
 
-        for (ReviewAttachment attachment : attachments) {
-            boolean exists = storageService.exists(attachment.getObjectKey());
+        Set<String> dbKeySet = new HashSet<>(databaseKeys);
 
-            if (!exists) {
+        List<String> storageKeys = storageService.listObjects("reviews/");
+
+        for (String objectKey : storageKeys) {
+            if (!dbKeySet.contains(objectKey)) {
                 log.warn(
-                        "Attachment metadata exists but object missing. attachmentId={}",
-                        attachment.getId()
+                        "Orphaned object detected. objectKey={}",
+                        objectKey
                 );
 
-                reviewAttachmentRepository.delete(attachment);
+               storageService.delete(objectKey);
             }
         }
     }
