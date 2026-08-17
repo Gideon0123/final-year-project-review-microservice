@@ -458,6 +458,12 @@ public class ReviewServiceImpl implements ReviewService {
             throw new AccessDeniedException("You can only update your own review");
         }
 
+        if (review.getDecision() != null) {
+            throw new IllegalStateException(
+                    "Review can no longer be modified after editorial decision"
+            );
+        }
+
         review.setRecommendation(request.getRecommendation());
         review.setOverallScore(request.getOverallScore());
         review.setCommentsForAuthor(request.getCommentsForAuthor());
