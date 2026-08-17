@@ -21,6 +21,7 @@ public interface ReviewService {
     ReviewResponse getReview(Long reviewId);
     List<RevisionHistoryResponse> getRevisionHistory(Long paperId);
     void deleteReview(Long reviewId);
+    ReviewResponse updateReview(Long reviewId, UpdateReviewRequest request);
 //    EditorDashboardResponse getDashboard(Long paperId);
 
 }

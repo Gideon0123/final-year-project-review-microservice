@@ -18,7 +18,7 @@ public class AttachmentCleanupScheduler {
 
         log.info("Starting attachment reconciliation");
 
-//        reconciliationService.removeBrokenMetadata();
+        reconciliationService.removeBrokenMetadata();
         reconciliationService.removeOrphanedObjects();
 
         log.info("Attachment reconciliation completed");

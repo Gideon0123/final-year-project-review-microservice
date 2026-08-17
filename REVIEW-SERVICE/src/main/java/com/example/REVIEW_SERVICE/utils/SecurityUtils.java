@@ -12,10 +12,8 @@ public final class SecurityUtils {
 
     public static boolean hasRole(String role) {
 
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
+        Authentication authentication =SecurityContextHolder.getContext()
+                .getAuthentication();
 
         assert authentication != null;
         return authentication

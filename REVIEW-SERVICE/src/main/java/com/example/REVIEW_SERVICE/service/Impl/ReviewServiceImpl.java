@@ -6,6 +6,7 @@ import com.example.REVIEW_SERVICE.entity.CurrentUser;
 import com.example.REVIEW_SERVICE.entity.Review;
 import com.example.REVIEW_SERVICE.enums.EditorialDecision;
 import com.example.REVIEW_SERVICE.enums.ReviewStatus;
+import com.example.REVIEW_SERVICE.exception.AccessDeniedException;
 import com.example.REVIEW_SERVICE.exception.ReviewNotFoundException;
 import com.example.REVIEW_SERVICE.mapper.ReviewMapper;
 import com.example.REVIEW_SERVICE.payload.PagedResponse;
@@ -433,6 +434,40 @@ public class ReviewServiceImpl implements ReviewService {
                 "Review deleted successfully. reviewId={}",
                 reviewId
         );
+    }
+
+    @Override
+    @Transactional
+    public ReviewResponse updateReview(
+            Long reviewId,
+            UpdateReviewRequest request
+    ) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(
+                () -> new ReviewNotFoundException(
+                        "Review not found"
+                )
+        );
+
+        CurrentUser user = currentUserService.getCurrentUser();
+        Long currentUserId = user.getId();
+        String role = user.getRole();
+
+        if ("REVIEWER".equals(role) &&
+                !review.getReviewerId().equals(currentUserId)) {
+
+            throw new AccessDeniedException("You can only update your own review");
+        }
+
+        review.setRecommendation(request.getRecommendation());
+        review.setOverallScore(request.getOverallScore());
+        review.setCommentsForAuthor(request.getCommentsForAuthor());
+        review.setCommentsForEditor(request.getCommentsForEditor());
+        review.setRequiresEditorialAttention(request.getRequiresEditorialAttention());
+        review.setEditorialAttentionReason(request.getEditorialAttentionReason());
+
+        Review saved = reviewRepository.save(review);
+
+        return reviewMapper.toResponse(saved);
     }
 
 }

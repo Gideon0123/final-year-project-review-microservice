@@ -339,6 +339,28 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{reviewId}")
+    @PreAuthorize("hasAnyRole('ADMIN','EDITOR','REVIEWER')")
+    public ResponseEntity<ApiResponse<ReviewResponse>> updateReview(
+            @PathVariable Long reviewId,
+            @RequestBody @Valid UpdateReviewRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        ReviewResponse response = reviewService.updateReview(reviewId, request);
+
+        return ResponseEntity.ok(
+                ApiResponse.<ReviewResponse>builder()
+                        .success(true)
+                        .message("Review Fetched Successfully.")
+                        .status(HttpStatus.OK.value())
+                        .data(response)
+                        .path(httpRequest.getRequestURI())
+                        .traceId(TraceIdUtil.generate())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
 //    @PreAuthorize("hasRole('ADMIN')")
 //    @GetMapping("/dashboard/{paperId}")
 //    public ResponseEntity<ApiResponse<EditorDashboardResponse>> getEditorDashboard(
