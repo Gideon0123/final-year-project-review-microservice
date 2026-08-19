@@ -21,7 +21,6 @@ public class RevisionWorkflowController {
     public ResponseEntity<Void> registerRevision(
             @Valid @RequestBody NewRevisionRequest request
     ) {
-
         revisionWorkflowService.registerRevision(request);
 
         return ResponseEntity.ok().build();
