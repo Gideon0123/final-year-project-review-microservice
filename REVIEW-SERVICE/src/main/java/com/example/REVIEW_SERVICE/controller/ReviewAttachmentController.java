@@ -147,9 +147,7 @@ public class ReviewAttachmentController {
                 );
     }
 
-    @GetMapping(
-            "/{reviewId}/attachments/{attachmentId}/url"
-    )
+    @GetMapping("/{reviewId}/attachments/{attachmentId}/url")
     public ResponseEntity<ApiResponse<String>> generateAttachmentUrl(
             @PathVariable Long reviewId,
             @PathVariable Long attachmentId,
