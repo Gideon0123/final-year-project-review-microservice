@@ -17,7 +17,6 @@ public class CacheConfig {
     public RedisCacheConfiguration redisCacheConfiguration(
             ObjectMapper objectMapper
     ) {
-
         ObjectMapper mapper = objectMapper.copy();
 
         mapper.activateDefaultTyping(

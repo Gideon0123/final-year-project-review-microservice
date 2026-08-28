@@ -6,6 +6,7 @@ import com.example.REVIEW_SERVICE.service.CurrentUserService;
 import com.example.REVIEW_SERVICE.service.ReviewDashboardService;
 import com.example.REVIEW_SERVICE.service.ReviewService;
 import com.example.REVIEW_SERVICE.service.ReviewStatisticsService;
+import com.example.REVIEW_SERVICE.utils.Idempotent;
 import com.example.REVIEW_SERVICE.utils.TraceIdUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -30,6 +31,7 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final ReviewDashboardService reviewDashboardService;
 
+    @Idempotent(ttlMinutes = 10)
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/assign")
     public ResponseEntity<ApiResponse<ReviewResponse>> assignReviewer(

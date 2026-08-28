@@ -9,6 +9,7 @@ import com.example.REVIEW_SERVICE.exception.IdempotencyConflictException;
 import com.example.REVIEW_SERVICE.exception.IdempotencyProcessingException;
 import com.example.REVIEW_SERVICE.repository.IdempotencyRepository;
 import com.example.REVIEW_SERVICE.utils.IdempotencyProperties;
+import com.example.REVIEW_SERVICE.utils.IdempotencyStateResolver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
