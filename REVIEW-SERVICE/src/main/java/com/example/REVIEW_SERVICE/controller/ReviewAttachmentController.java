@@ -81,24 +81,27 @@ public class ReviewAttachmentController {
     }
 
     @GetMapping("/{reviewId}/attachments/{attachmentId}/download")
-    public ResponseEntity<ApiResponse<Resource>> downloadAttachment(
+    public ResponseEntity<Resource> downloadAttachment(
             @PathVariable Long reviewId,
-            @PathVariable Long attachmentId,
-            HttpServletRequest httpRequest
+            @PathVariable Long attachmentId
     ) {
 
-        AttachmentDownload download = reviewAttachmentService.downloadAttachment(
-                reviewId,
-                attachmentId
-        );
+        AttachmentDownload download =
+                reviewAttachmentService.downloadAttachment(
+                        reviewId,
+                        attachmentId
+                );
 
-        InputStreamResource resource = new InputStreamResource(
-                download.getInputStream()
-        );
+        InputStreamResource resource =
+                new InputStreamResource(
+                        download.getInputStream()
+                );
 
         return ResponseEntity.ok()
                 .contentType(
-                        MediaType.parseMediaType(download.getContentType())
+                        MediaType.parseMediaType(
+                                download.getContentType()
+                        )
                 )
                 .contentLength(download.getFileSize())
                 .header(
@@ -107,17 +110,7 @@ public class ReviewAttachmentController {
                                 + download.getFilename()
                                 + "\""
                 )
-                .body(
-                        ApiResponse.<Resource>builder()
-                                .success(true)
-                                .message("Review Attachment Downloaded successfully.")
-                                .status(HttpStatus.OK.value())
-                                .data(resource)
-                                .path(httpRequest.getRequestURI())
-                                .traceId(TraceIdUtil.generate())
-                                .timestamp(LocalDateTime.now())
-                                .build()
-                );
+                .body(resource);
     }
 
     @GetMapping("/{reviewId}/attachments/{attachmentId}/exists")
@@ -170,11 +163,10 @@ public class ReviewAttachmentController {
                 );
     }
 
-    @DeleteMapping("/{attachmentId}")
+    @DeleteMapping("/{attachmentId}/attachments")
     public ResponseEntity<Void> deleteAttachment(
             @PathVariable Long attachmentId
     ) {
-
         reviewAttachmentService.deleteAttachment(
                 attachmentId
         );

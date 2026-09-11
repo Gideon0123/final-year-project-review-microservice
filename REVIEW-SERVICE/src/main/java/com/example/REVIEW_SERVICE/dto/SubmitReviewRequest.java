@@ -27,6 +27,6 @@ public class SubmitReviewRequest {
     @Size(max = 10000)
     private String commentsForEditor;
 
-    private String attachmentUrl;
-
+//    private String attachmentUrl;
+    private Long attachmentId;
 }

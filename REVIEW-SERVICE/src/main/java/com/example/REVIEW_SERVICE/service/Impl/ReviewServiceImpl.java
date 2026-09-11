@@ -7,10 +7,12 @@ import com.example.REVIEW_SERVICE.entity.Review;
 import com.example.REVIEW_SERVICE.enums.EditorialDecision;
 import com.example.REVIEW_SERVICE.enums.ReviewStatus;
 import com.example.REVIEW_SERVICE.exception.AccessDeniedException;
+import com.example.REVIEW_SERVICE.exception.ResourceNotFoundException;
 import com.example.REVIEW_SERVICE.exception.ReviewNotFoundException;
 import com.example.REVIEW_SERVICE.mapper.ReviewMapper;
 import com.example.REVIEW_SERVICE.payload.PagedResponse;
 import com.example.REVIEW_SERVICE.publisher.ReviewEventPublisher;
+import com.example.REVIEW_SERVICE.repository.ReviewAttachmentRepository;
 import com.example.REVIEW_SERVICE.repository.ReviewRepository;
 import com.example.REVIEW_SERVICE.service.*;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ import java.util.List;
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final ReviewAttachmentRepository reviewAttachmentRepository;
     private final ReviewMapper reviewMapper;
     private final CurrentUserService currentUserService;
     private final BlindReviewService blindReviewService;
@@ -219,8 +222,17 @@ public class ReviewServiceImpl implements ReviewService {
         review.setOverallScore(request.getOverallScore());
         review.setRecommendation(request.getRecommendation());
         review.setStatus(ReviewStatus.SUBMITTED);
-        review.setAttachmentUrl(request.getAttachmentUrl());
         review.setSubmittedAt(LocalDateTime.now());
+        if (request.getAttachmentId() != null) {
+            reviewAttachmentRepository.findByIdAndReviewId(
+                            request.getAttachmentId(),
+                            review.getId()
+                    ).orElseThrow(() -> new ResourceNotFoundException(
+                        "Attachment not found for this review"
+                    )
+            );
+        }
+//        review.setAttachmentUrl(request.getAttachmentUrl());
 
         review.setRequiresEditorialAttention(
                 validationResult.isRequiresAttention()

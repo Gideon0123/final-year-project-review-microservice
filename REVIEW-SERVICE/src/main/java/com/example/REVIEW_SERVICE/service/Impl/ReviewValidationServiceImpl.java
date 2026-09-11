@@ -221,44 +221,51 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
             SubmitReviewRequest request
     ) {
         if (review.getStatus() == ReviewStatus.COMPLETED) {
-            throw new ReviewAlreadyCompletedException("Review has already been submitted.");
+            throw new ReviewAlreadyCompletedException(
+                    "Review has already been submitted."
+            );
         }
 
         if (review.getStatus() == ReviewStatus.INVITATION_DECLINED) {
-            throw new InvalidReviewStateException("Declined reviews cannot be submitted.");
+            throw new InvalidReviewStateException(
+                    "Declined reviews cannot be submitted."
+            );
         }
 
         if (review.getStatus() != ReviewStatus.INVITATION_ACCEPTED &&
                 review.getStatus() != ReviewStatus.IN_PROGRESS) {
 
-            throw new InvalidReviewStateException("Review is not ready for submission.");
+            throw new InvalidReviewStateException(
+                    "Review is not ready for submission."
+            );
         }
 
         if (request.getRecommendation() == null) {
-            throw new InvalidReviewStateException("Recommendation is required.");
+            throw new InvalidReviewStateException(
+                    "Recommendation is required."
+            );
         }
 
         if (request.getOverallScore() == null) {
-            throw new InvalidReviewStateException("Overall score is required.");
+            throw new InvalidReviewStateException(
+                    "Overall score is required."
+            );
         }
 
         if (request.getCommentsForAuthor() == null ||
                 request.getCommentsForAuthor().isBlank()) {
 
-            throw new InvalidReviewStateException("Comments for author are required.");
+            throw new InvalidReviewStateException(
+                    "Comments for author are required."
+            );
         }
 
-        String attachment = request.getAttachmentUrl();
+        Long attachmentId = request.getAttachmentId();
 
-        if (attachment != null && !attachment.isBlank()) {
-
-            if (!(attachment.startsWith("http://")
-                    || attachment.startsWith("https://"))) {
-
-                throw new InvalidReviewStateException(
-                        "Attachment URL must be a valid HTTP or HTTPS URL."
-                );
-            }
+        if (attachmentId != null && attachmentId <= 0) {
+            throw new InvalidReviewStateException(
+                    "Attachment ID must be a valid positive number."
+            );
         }
 
         validateDeadline(review);

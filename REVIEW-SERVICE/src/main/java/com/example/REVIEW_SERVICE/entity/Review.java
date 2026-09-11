@@ -108,8 +108,8 @@ public class Review {
     /**
      * Optional review attachment.
      */
-    @Column(name = "attachment_url")
-    private String attachmentUrl;
+//    @Column(name = "attachment_url", columnDefinition = "TEXT")
+//    private String attachmentUrl;
 
     private String declineReason;
 
