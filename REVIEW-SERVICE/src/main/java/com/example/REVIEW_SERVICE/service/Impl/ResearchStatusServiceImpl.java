@@ -19,15 +19,14 @@ public class ResearchStatusServiceImpl implements ResearchStatusService {
             Long paperId,
             EditorialDecision decision
     ) {
-        ResearchStatus status =
-                switch (decision) {
-                    case ACCEPT -> ResearchStatus.ACCEPTED;
+        ResearchStatus status = switch (decision) {
+            case ACCEPT -> ResearchStatus.APPROVED;
 
-                    case REJECT -> ResearchStatus.REJECTED;
+            case REJECT -> ResearchStatus.REJECTED;
 
-                    case MINOR_REVISION, MAJOR_REVISION ->
-                            ResearchStatus.REVISION_REQUESTED;
-                };
+            case MINOR_REVISION, MAJOR_REVISION ->
+                    ResearchStatus.REVISION_REQUESTED;
+        };
 
         researchServiceClient.updateStatus(
                 paperId,

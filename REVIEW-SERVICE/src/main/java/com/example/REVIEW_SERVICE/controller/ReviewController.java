@@ -124,7 +124,7 @@ public class ReviewController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Idempotent(ttlMinutes = 3)
-    @PostMapping("/{reviewId}/decision")
+    @PostMapping("/{reviewId}/editor-decision")
     public ResponseEntity<ApiResponse<ReviewResponse>> editorialDecision(
             @PathVariable long reviewId,
             @Valid @RequestBody EditorialDecisionRequest request,

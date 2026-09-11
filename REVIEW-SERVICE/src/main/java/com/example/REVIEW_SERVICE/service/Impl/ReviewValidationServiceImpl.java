@@ -236,7 +236,7 @@ public class ReviewValidationServiceImpl implements ReviewValidationService {
                 review.getStatus() != ReviewStatus.IN_PROGRESS) {
 
             throw new InvalidReviewStateException(
-                    "Review is not ready for submission."
+                    "Review can only be submitted when in progress or is accepted"
             );
         }
 

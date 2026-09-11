@@ -9,7 +9,6 @@ import com.example.REVIEW_SERVICE.utils.TraceIdUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -81,36 +80,29 @@ public class ReviewAttachmentController {
     }
 
     @GetMapping("/{reviewId}/attachments/{attachmentId}/download")
-    public ResponseEntity<Resource> downloadAttachment(
+    public ResponseEntity<InputStreamResource> downloadAttachment(
             @PathVariable Long reviewId,
             @PathVariable Long attachmentId
     ) {
-
-        AttachmentDownload download =
-                reviewAttachmentService.downloadAttachment(
-                        reviewId,
-                        attachmentId
-                );
-
-        InputStreamResource resource =
-                new InputStreamResource(
-                        download.getInputStream()
-                );
+        AttachmentDownload response = reviewAttachmentService.downloadAttachment(
+                reviewId,
+                attachmentId
+        );
 
         return ResponseEntity.ok()
-                .contentType(
-                        MediaType.parseMediaType(
-                                download.getContentType()
-                        )
-                )
-                .contentLength(download.getFileSize())
+                .contentType(MediaType.parseMediaType(response.getContentType()))
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\""
-                                + download.getFilename()
-                                + "\""
+                        "attachment; filename=\"" +
+                                response.getFilename() +
+                                "\""
                 )
-                .body(resource);
+                .contentLength(response.getFileSize())
+                .body(
+                        new InputStreamResource(
+                                response.getInputStream()
+                        )
+                );
     }
 
     @GetMapping("/{reviewId}/attachments/{attachmentId}/exists")

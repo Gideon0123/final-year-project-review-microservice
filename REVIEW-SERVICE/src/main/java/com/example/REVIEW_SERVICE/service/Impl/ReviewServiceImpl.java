@@ -146,7 +146,6 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = lookupService.getReviewById(reviewId);
         authorizationService.verifyReviewer(review);
         validationService.validateInvitationAcceptance(review);
-//        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(review.getReviewerId());
 
         review.setStatus(ReviewStatus.INVITATION_ACCEPTED);
         review.setAcceptedAt(LocalDateTime.now());
@@ -174,7 +173,6 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = lookupService.getReviewById(reviewId);
         authorizationService.verifyReviewer(review);
         validationService.validateInvitationDecline(review);
-//        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(review.getReviewerId());
 
         review.setStatus(ReviewStatus.INVITATION_DECLINED);
         review.setDeclineReason(request.getReason());
@@ -206,17 +204,12 @@ public class ReviewServiceImpl implements ReviewService {
         authorizationService.verifyReviewer(review);
 
         if (review.getStatus() == ReviewStatus.INVITATION_ACCEPTED) {
-
             review.setStatus(ReviewStatus.IN_PROGRESS);
         }
 
-//        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(review.getReviewerId());
-
         RecommendationValidationResult validationResult =
-                validationService.validateSubmission(
-                        review,
-                        request
-                );
+                validationService.validateSubmission(review, request);
+
         review.setCommentsForAuthor(request.getCommentsForAuthor());
         review.setCommentsForEditor(request.getCommentsForEditor());
         review.setOverallScore(request.getOverallScore());
@@ -275,7 +268,11 @@ public class ReviewServiceImpl implements ReviewService {
 
         validationService.validateDecision(review);
 
+        log.info("STEP 1: Getting paper summary. paperId={}", review.getPaperId());
+
         PaperSummaryResponse paper = paperLookupService.getPaperSummary(review.getPaperId());
+
+        log.info("STEP 2: Paper summary retrieved successfully. paperId={}", review.getPaperId());
 
         /*
          * Preserve the previous decision before updating.
@@ -288,20 +285,17 @@ public class ReviewServiceImpl implements ReviewService {
 
         switch (request.getDecision()) {
 
-            case ACCEPT ->
-                    review.setStatus(
-                            ReviewStatus.ACCEPTED
-                    );
+            case ACCEPT -> review.setStatus(
+                    ReviewStatus.ACCEPTED
+            );
 
-            case MINOR_REVISION, MAJOR_REVISION ->
-                    review.setStatus(
-                            ReviewStatus.REVISION_REQUESTED
-                    );
+            case MINOR_REVISION, MAJOR_REVISION -> review.setStatus(
+                    ReviewStatus.REVISION_REQUESTED
+            );
 
-            case REJECT ->
-                    review.setStatus(
-                            ReviewStatus.REJECTED
-                    );
+            case REJECT -> review.setStatus(
+                    ReviewStatus.REJECTED
+            );
 
         }
 
@@ -315,9 +309,20 @@ public class ReviewServiceImpl implements ReviewService {
                 currentUserService.getCurrentUser().getId()
         );
 
+        log.info(
+                "STEP 3: Updating research paper status. paperId={}, decision={}",
+                review.getPaperId(),
+                request.getDecision()
+        );
+
         researchStatusService.updatePaperStatus(
                 review.getPaperId(),
                 request.getDecision()
+        );
+
+        log.info(
+                "STEP 4: Research paper status updated successfully. paperId={}",
+                review.getPaperId()
         );
 
         reviewEventPublisher.publishDecision(
@@ -454,11 +459,11 @@ public class ReviewServiceImpl implements ReviewService {
             Long reviewId,
             UpdateReviewRequest request
     ) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(
-                () -> new ReviewNotFoundException(
-                        "Review not found"
-                )
-        );
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundException(
+                                "Review not found"
+                        )
+                );
 
         CurrentUser user = currentUserService.getCurrentUser();
         Long currentUserId = user.getId();
@@ -467,7 +472,9 @@ public class ReviewServiceImpl implements ReviewService {
         if ("REVIEWER".equals(role) &&
                 !review.getReviewerId().equals(currentUserId)) {
 
-            throw new AccessDeniedException("You can only update your own review");
+            throw new AccessDeniedException(
+                    "You can only update your own review"
+            );
         }
 
         if (review.getDecision() != null) {
@@ -476,12 +483,29 @@ public class ReviewServiceImpl implements ReviewService {
             );
         }
 
-        review.setRecommendation(request.getRecommendation());
-        review.setOverallScore(request.getOverallScore());
-        review.setCommentsForAuthor(request.getCommentsForAuthor());
-        review.setCommentsForEditor(request.getCommentsForEditor());
-        review.setRequiresEditorialAttention(request.getRequiresEditorialAttention());
-        review.setEditorialAttentionReason(request.getEditorialAttentionReason());
+        if (request.getRecommendation() != null) {
+            review.setRecommendation(request.getRecommendation());
+        }
+
+        if (request.getOverallScore() != null) {
+            review.setOverallScore(request.getOverallScore());
+        }
+
+        if (request.getCommentsForAuthor() != null) {
+            review.setCommentsForAuthor(request.getCommentsForAuthor());
+        }
+
+        if (request.getCommentsForEditor() != null) {
+            review.setCommentsForEditor(request.getCommentsForEditor());
+        }
+
+        if (request.getRequiresEditorialAttention() != null) {
+            review.setRequiresEditorialAttention(request.getRequiresEditorialAttention());
+        }
+
+        if (request.getEditorialAttentionReason() != null) {
+            review.setEditorialAttentionReason(request.getEditorialAttentionReason());
+        }
 
         Review saved = reviewRepository.save(review);
 
