@@ -79,7 +79,7 @@ public class Review {
     private Integer revisionNumber;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     private ReviewStatus status;
 
     @Enumerated(EnumType.STRING)

@@ -5,10 +5,7 @@ import com.example.REVIEW_SERVICE.dto.ApiResponse;
 import com.example.REVIEW_SERVICE.dto.PaperSummaryResponse;
 import com.example.REVIEW_SERVICE.dto.ResearchStatusUpdateRequest;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(
         name = "RESEARCH-SERVICE",
@@ -21,7 +18,7 @@ public interface ResearchServiceClient {
             @PathVariable Long paperId
     );
 
-    @PatchMapping("/research/papers/internal/{paperId}/status")
+    @PostMapping("/research/papers/internal/{paperId}/status")
     void updateStatus(
             @PathVariable Long paperId,
             @RequestBody ResearchStatusUpdateRequest request

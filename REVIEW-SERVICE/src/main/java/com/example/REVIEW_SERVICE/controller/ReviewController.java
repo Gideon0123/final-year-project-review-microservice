@@ -369,26 +369,4 @@ public class ReviewController {
         );
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
-//    @GetMapping("/dashboard/{paperId}")
-//    public ResponseEntity<ApiResponse<EditorDashboardResponse>> getEditorDashboard(
-//            @PathVariable Long paperId,
-//            HttpServletRequest request
-//    ) {
-//        EditorDashboardResponse response = reviewService.getDashboard(paperId);
-//
-//        return ResponseEntity.ok(
-//                ApiResponse.<EditorDashboardResponse>builder()
-//                        .success(true)
-//                        .message("Editorial Dashboard retrieved successfully.")
-//                        .status(HttpStatus.OK.value())
-//                        .data(response)
-//                        .path(request.getRequestURI())
-//                        .traceId(TraceIdUtil.generate())
-//                        .timestamp(LocalDateTime.now())
-//                        .build()
-//
-//        );
-//    }
-
 }
