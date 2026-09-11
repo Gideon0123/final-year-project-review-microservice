@@ -31,7 +31,7 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final ReviewDashboardService reviewDashboardService;
 
-    @Idempotent(ttlMinutes = 10)
+    @Idempotent(ttlMinutes = 3)
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/assign")
     public ResponseEntity<ApiResponse<ReviewResponse>> assignReviewer(
@@ -55,6 +55,7 @@ public class ReviewController {
     }
 
     @PreAuthorize("hasRole('REVIEWER')")
+    @Idempotent(ttlMinutes = 3)
     @PatchMapping("/{reviewId}/accept")
     public ResponseEntity<ApiResponse<ReviewResponse>> acceptReviewer(
             @PathVariable long reviewId,
@@ -76,6 +77,7 @@ public class ReviewController {
     }
 
     @PreAuthorize("hasRole('REVIEWER')")
+    @Idempotent(ttlMinutes = 3)
     @PatchMapping("/{reviewId}/decline")
     public ResponseEntity<ApiResponse<ReviewResponse>> declineReview(
             @PathVariable long reviewId,
@@ -98,6 +100,7 @@ public class ReviewController {
     }
 
     @PreAuthorize("hasRole('REVIEWER')")
+    @Idempotent(ttlMinutes = 3)
     @PostMapping("/{reviewId}/submit")
     public ResponseEntity<ApiResponse<ReviewResponse>> submitReview(
             @PathVariable long reviewId,
@@ -120,6 +123,7 @@ public class ReviewController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @Idempotent(ttlMinutes = 3)
     @PostMapping("/{reviewId}/decision")
     public ResponseEntity<ApiResponse<ReviewResponse>> editorialDecision(
             @PathVariable long reviewId,
@@ -323,6 +327,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{reviewId}")
+    @Idempotent(ttlMinutes = 3)
     public ResponseEntity<ApiResponse<Void>> deleteReview(
             @PathVariable Long reviewId,
             HttpServletRequest request
@@ -342,6 +347,7 @@ public class ReviewController {
     }
 
     @PutMapping("/{reviewId}")
+    @Idempotent(ttlMinutes = 3)
     @PreAuthorize("hasAnyRole('ADMIN','EDITOR','REVIEWER')")
     public ResponseEntity<ApiResponse<ReviewResponse>> updateReview(
             @PathVariable Long reviewId,

@@ -4,6 +4,7 @@ import com.example.REVIEW_SERVICE.dto.ApiResponse;
 import com.example.REVIEW_SERVICE.dto.AttachmentDownload;
 import com.example.REVIEW_SERVICE.dto.ReviewAttachmentResponse;
 import com.example.REVIEW_SERVICE.service.ReviewAttachmentService;
+import com.example.REVIEW_SERVICE.utils.Idempotent;
 import com.example.REVIEW_SERVICE.utils.TraceIdUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -29,16 +30,16 @@ public class ReviewAttachmentController {
             value = "/{reviewId}/attachments",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
+    @Idempotent(ttlMinutes = 5)
     public ResponseEntity<ApiResponse<ReviewAttachmentResponse>> uploadAttachment(
             @PathVariable Long reviewId,
             @RequestParam("file") MultipartFile file,
             HttpServletRequest httpRequest
     ) {
-        ReviewAttachmentResponse response =
-                reviewAttachmentService.uploadAttachment(
-                        reviewId,
-                        file
-                );
+        ReviewAttachmentResponse response = reviewAttachmentService.uploadAttachment(
+                reviewId,
+                file
+        );
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(
@@ -86,11 +87,10 @@ public class ReviewAttachmentController {
             HttpServletRequest httpRequest
     ) {
 
-        AttachmentDownload download =
-                reviewAttachmentService.downloadAttachment(
-                        reviewId,
-                        attachmentId
-                );
+        AttachmentDownload download = reviewAttachmentService.downloadAttachment(
+                reviewId,
+                attachmentId
+        );
 
         InputStreamResource resource = new InputStreamResource(
                 download.getInputStream()
@@ -100,9 +100,7 @@ public class ReviewAttachmentController {
                 .contentType(
                         MediaType.parseMediaType(download.getContentType())
                 )
-                .contentLength(
-                        download.getFileSize()
-                )
+                .contentLength(download.getFileSize())
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,
                         "attachment; filename=\""
@@ -129,9 +127,9 @@ public class ReviewAttachmentController {
             HttpServletRequest httpRequest
     ) {
         boolean exists = reviewAttachmentService.attachmentExists(
-                        reviewId,
-                        attachmentId
-                );
+                reviewId,
+                attachmentId
+        );
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(
