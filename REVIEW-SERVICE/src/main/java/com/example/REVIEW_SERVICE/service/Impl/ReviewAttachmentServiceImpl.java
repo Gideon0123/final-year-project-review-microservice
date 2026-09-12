@@ -11,9 +11,12 @@ import com.example.REVIEW_SERVICE.repository.ReviewAttachmentRepository;
 import com.example.REVIEW_SERVICE.repository.ReviewRepository;
 import com.example.REVIEW_SERVICE.service.ReviewAttachmentService;
 import com.example.REVIEW_SERVICE.service.StorageService;
+import com.example.REVIEW_SERVICE.utils.CacheNames;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -96,6 +99,11 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(
+            value = CacheNames.REVIEW_ATTACHMENTS,
+            key = "T(com.example.REVIEW_SERVICE.utils.CacheKeys)" +
+                    ".attachment(#reviewId, #attachmentId)"
+    )
     public ReviewAttachmentResponse getAttachmentMetadata(
             Long attachmentId, Long reviewId
     ) {
@@ -113,6 +121,11 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(
+            value = CacheNames.REVIEW_ATTACHMENTS,
+            key = "T(com.example.REVIEW_SERVICE.utils.CacheKeys)" +
+                    ".attachmentExists(#reviewId, #attachmentId)"
+    )
     public boolean attachmentExists(
             Long reviewId,
             Long attachmentId
@@ -195,6 +208,10 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
 
     @Override
     @Transactional
+    @CacheEvict(
+            value = CacheNames.REVIEW_ATTACHMENTS,
+            allEntries = true
+    )
     public void deleteAttachment(Long attachmentId) {
 
         ReviewAttachment attachment = reviewAttachmentRepository.findById(attachmentId)

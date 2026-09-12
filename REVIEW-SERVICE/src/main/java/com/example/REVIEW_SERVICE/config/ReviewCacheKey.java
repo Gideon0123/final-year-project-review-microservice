@@ -27,6 +27,7 @@ public class ReviewCacheKey {
     }
 
     public String review(Long reviewId) {
+
         var user = currentUserService.getCurrentUser();
 
         return CacheKeys.review(

@@ -332,11 +332,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         validationService.validateDecision(review);
 
-        log.info("STEP 1: Getting paper summary. paperId={}", review.getPaperId());
-
         PaperSummaryResponse paper = paperLookupService.getPaperSummary(review.getPaperId());
-
-        log.info("STEP 2: Paper summary retrieved successfully. paperId={}", review.getPaperId());
 
         /*
          * Preserve the previous decision before updating.
@@ -373,20 +369,9 @@ public class ReviewServiceImpl implements ReviewService {
                 currentUserService.getCurrentUser().getId()
         );
 
-        log.info(
-                "STEP 3: Updating research paper status. paperId={}, decision={}",
-                review.getPaperId(),
-                request.getDecision()
-        );
-
         researchStatusService.updatePaperStatus(
                 review.getPaperId(),
                 request.getDecision()
-        );
-
-        log.info(
-                "STEP 4: Research paper status updated successfully. paperId={}",
-                review.getPaperId()
         );
 
         reviewEventPublisher.publishDecision(
@@ -440,7 +425,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     @Cacheable(
             value = CacheNames.REVIEWS,
-            key = "T(com.example.REVIEW_SERVICE.utils)" +
+            key = "T(com.example.REVIEW_SERVICE.utils.CacheKeys)" +
                     ".paperReviews(#paperId, #page, #size, #sortBy, #sortDirection)"
     )
     public PagedResponse<ReviewSummaryResponse> getPaperReviews(
@@ -503,7 +488,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     @Cacheable(
             value = CacheNames.REVISION_HISTORY,
-            key = "T(com.example.REVIEW_SERVICE.utils)" +
+            key = "T(com.example.REVIEW_SERVICE.utils.CacheKeys)" +
                     ".revisionHistory(#paperId)"
     )
     public List<RevisionHistoryResponse> getRevisionHistory(
