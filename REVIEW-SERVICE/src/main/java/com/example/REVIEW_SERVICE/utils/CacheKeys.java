@@ -11,27 +11,17 @@ public final class CacheKeys {
      * ============================================================
      */
 
-    public static String review(Long reviewId) {
-        return "review:" + reviewId;
-    }
-
-    public static String assignedReviews(
-            Long reviewerId,
-            int page,
-            int size,
-            String sortBy,
-            String sortDirection
+    public static String review(
+            Long reviewId,
+            Long userId,
+            String role
     ) {
-        return "reviewer:" +
-                reviewerId +
-                ":page:" +
-                page +
-                ":size:" +
-                size +
-                ":sortBy:" +
-                sortBy +
-                ":sortDirection:" +
-                sortDirection;
+        return "review:" +
+                reviewId +
+                ":user:" +
+                userId +
+                ":role:" +
+                role;
     }
 
     public static String paperReviews(
@@ -56,7 +46,7 @@ public final class CacheKeys {
 
     /*
      * ============================================================
-     * REVISION HISTORY KEYS
+     * REVISION HISTORY
      * ============================================================
      */
 
@@ -67,7 +57,7 @@ public final class CacheKeys {
 
     /*
      * ============================================================
-     * REVIEW ATTACHMENT KEYS
+     * REVIEW ATTACHMENTS
      * ============================================================
      */
 
@@ -90,6 +80,25 @@ public final class CacheKeys {
                 ":attachment:" +
                 attachmentId +
                 ":exists";
+    }
+
+    public static String assignedReviews(
+            Long reviewerId,
+            int page,
+            int size,
+            String sortBy,
+            String sortDirection
+    ) {
+        return "reviewer:" +
+                reviewerId +
+                ":page:" +
+                page +
+                ":size:" +
+                size +
+                ":sortBy:" +
+                sortBy +
+                ":sortDirection:" +
+                sortDirection;
     }
 
 }

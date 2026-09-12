@@ -15,8 +15,12 @@ import com.example.REVIEW_SERVICE.publisher.ReviewEventPublisher;
 import com.example.REVIEW_SERVICE.repository.ReviewAttachmentRepository;
 import com.example.REVIEW_SERVICE.repository.ReviewRepository;
 import com.example.REVIEW_SERVICE.service.*;
+import com.example.REVIEW_SERVICE.utils.CacheNames;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -91,6 +95,18 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            value = CacheNames.REVIEWS,
+                            allEntries = true
+                    ),
+                    @CacheEvict(
+                            value = CacheNames.REVISION_HISTORY,
+                            allEntries = true
+                    )
+            }
+    )
     public ReviewResponse assignReviewer(
             AssignReviewerRequest request
     ) {
@@ -140,6 +156,18 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            value = CacheNames.REVIEWS,
+                            allEntries = true
+                    ),
+                    @CacheEvict(
+                            value = CacheNames.REVISION_HISTORY,
+                            allEntries = true
+                    )
+            }
+    )
     public ReviewResponse acceptInvitation(
             Long reviewId
     ) {
@@ -166,6 +194,18 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            value = CacheNames.REVIEWS,
+                            allEntries = true
+                    ),
+                    @CacheEvict(
+                            value = CacheNames.REVISION_HISTORY,
+                            allEntries = true
+                    )
+            }
+    )
     public ReviewResponse declineInvitation(
             Long reviewId,
             DeclineReviewRequest request
@@ -195,6 +235,18 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            value = CacheNames.REVIEWS,
+                            allEntries = true
+                    ),
+                    @CacheEvict(
+                            value = CacheNames.REVISION_HISTORY,
+                            allEntries = true
+                    )
+            }
+    )
     public ReviewResponse submitReview(
             Long reviewId,
             SubmitReviewRequest request
@@ -258,6 +310,18 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            value = CacheNames.REVIEWS,
+                            allEntries = true
+                    ),
+                    @CacheEvict(
+                            value = CacheNames.REVISION_HISTORY,
+                            allEntries = true
+                    )
+            }
+    )
     public ReviewResponse editorDecision(
             Long reviewId,
             EditorialDecisionRequest request
@@ -342,6 +406,10 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(
+            value = CacheNames.REVIEWS,
+            key = "@reviewCacheKey.assignedReviews(#page, #size, #sortBy, #sortDirection)"
+    )
     public PagedResponse<ReviewSummaryResponse> getAssignedReviews(
             int page,
             int size,
@@ -370,6 +438,11 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(
+            value = CacheNames.REVIEWS,
+            key = "T(com.example.REVIEW_SERVICE.utils)" +
+                    ".paperReviews(#paperId, #page, #size, #sortBy, #sortDirection)"
+    )
     public PagedResponse<ReviewSummaryResponse> getPaperReviews(
             Long paperId,
             int page,
@@ -405,6 +478,10 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(
+            value = CacheNames.REVIEWS,
+            key = "@reviewCacheKey.review(#reviewId)"
+    )
     public ReviewResponse getReview(
             Long reviewId
     ) {
@@ -424,6 +501,11 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(
+            value = CacheNames.REVISION_HISTORY,
+            key = "T(com.example.REVIEW_SERVICE.utils)" +
+                    ".revisionHistory(#paperId)"
+    )
     public List<RevisionHistoryResponse> getRevisionHistory(
             Long paperId
     ) {
@@ -436,6 +518,18 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            value = CacheNames.REVIEWS,
+                            allEntries = true
+                    ),
+                    @CacheEvict(
+                            value = CacheNames.REVISION_HISTORY,
+                            allEntries = true
+                    )
+            }
+    )
     public void deleteReview(Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
                         .orElseThrow(() -> new ReviewNotFoundException(
@@ -455,6 +549,18 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            value = CacheNames.REVIEWS,
+                            allEntries = true
+                    ),
+                    @CacheEvict(
+                            value = CacheNames.REVISION_HISTORY,
+                            allEntries = true
+                    )
+            }
+    )
     public ReviewResponse updateReview(
             Long reviewId,
             UpdateReviewRequest request
