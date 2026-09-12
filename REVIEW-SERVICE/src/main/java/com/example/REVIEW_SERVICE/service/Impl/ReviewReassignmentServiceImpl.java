@@ -25,7 +25,6 @@ public class ReviewReassignmentServiceImpl implements ReviewReassignmentService 
             Long paperId,
             Integer revisionNumber
     ) {
-
         List<Review> previousReviews = reviewRepository.findLatestRoundReviews(paperId);
 
         if (previousReviews.isEmpty()) {
@@ -37,20 +36,18 @@ public class ReviewReassignmentServiceImpl implements ReviewReassignmentService 
 
         for (Review previous : previousReviews) {
 
-            Review review =
-                    Review.builder()
-                            .paperId(previous.getPaperId())
-                            .reviewerId(previous.getReviewerId())
-                            .assignedBy(previous.getAssignedBy())
-                            .revisionNumber(revisionNumber)
-                            .reviewRound(nextRound)
-                            .status(ReviewStatus.PENDING_INVITATION)
-                            .deadline(deadlineService.calculateDeadline())
-                            .assignedAt(LocalDateTime.now())
-                            .invitationSentAt(LocalDateTime.now())
-                            .createdAt(LocalDateTime.now())
-
-                            .build();
+            Review review = Review.builder()
+                    .paperId(previous.getPaperId())
+                    .reviewerId(previous.getReviewerId())
+                    .assignedBy(previous.getAssignedBy())
+                    .revisionNumber(revisionNumber)
+                    .reviewRound(nextRound)
+                    .status(ReviewStatus.PENDING_INVITATION)
+                    .deadline(deadlineService.calculateDeadline())
+                    .assignedAt(LocalDateTime.now())
+                    .invitationSentAt(LocalDateTime.now())
+                    .createdAt(LocalDateTime.now())
+                    .build();
 
             reviewRepository.save(review);
 

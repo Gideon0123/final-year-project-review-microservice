@@ -24,7 +24,6 @@ public class ReminderServiceImpl implements ReminderService {
     public void sendDeadlineReminder(
             Review review
     ) {
-
         ReviewerSummaryResponse reviewer = authLookupService.getReviewer(
                 review.getReviewerId()
         );
@@ -49,20 +48,18 @@ public class ReminderServiceImpl implements ReminderService {
     public void sendEscalationReminder(
             Review review
     ) {
-        ReviewerSummaryResponse reviewer =
-                authLookupService.getReviewer(
-                        review.getReviewerId()
-                );
+        ReviewerSummaryResponse reviewer = authLookupService.getReviewer(
+                review.getReviewerId()
+        );
 
-        ReviewEscalationEvent event =
-                ReviewEscalationEvent.builder()
-                        .reviewId(review.getId())
-                        .reviewerId(review.getReviewerId())
-                        .reviewerEmail(reviewer.getEmail())
-                        .paperId(review.getPaperId())
-                        .deadline(review.getDeadline())
-                        .escalatedAt(LocalDateTime.now())
-                        .build();
+        ReviewEscalationEvent event = ReviewEscalationEvent.builder()
+                .reviewId(review.getId())
+                .reviewerId(review.getReviewerId())
+                .reviewerEmail(reviewer.getEmail())
+                .paperId(review.getPaperId())
+                .deadline(review.getDeadline())
+                .escalatedAt(LocalDateTime.now())
+                .build();
 
         rabbitTemplate.convertAndSend(
                 RabbitMQConstants.REVIEW_EXCHANGE,

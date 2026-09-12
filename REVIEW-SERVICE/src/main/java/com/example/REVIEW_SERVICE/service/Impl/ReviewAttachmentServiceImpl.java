@@ -64,12 +64,9 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
                         )
                 );
 
-        String originalFilename =
-                StringUtils.cleanPath(
-                        file.getOriginalFilename() != null
-                                ? file.getOriginalFilename()
-                                : "unnamed-file"
-                );
+        String originalFilename = StringUtils.cleanPath(
+                file.getOriginalFilename() != null ? file.getOriginalFilename() : "unnamed-file"
+        );
 
         String objectKey = generateObjectKey(
                 reviewId,
@@ -209,18 +206,7 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
 
         String objectKey = attachment.getObjectKey();
 
-        /*
-         * Delete the physical object first.
-         *
-         * If MinIO fails, an exception is thrown and the database
-         * metadata is NOT deleted.
-         */
         storageService.delete(objectKey);
-
-        /*
-         * Only delete database metadata after the storage
-         * deletion has succeeded.
-         */
         reviewAttachmentRepository.delete(attachment);
     }
 
@@ -263,18 +249,13 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
         }
 
         String filename = file.getOriginalFilename();
-
         if (filename == null || filename.isBlank()) {
             throw new IllegalArgumentException("File must have a valid filename");
         }
 
         String contentType = file.getContentType();
-
         if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
-            throw new IllegalArgumentException(
-                    "Unsupported file type: "
-                            + contentType
-            );
+            throw new IllegalArgumentException("Unsupported file type: " + contentType);
         }
     }
 
@@ -284,19 +265,10 @@ public class ReviewAttachmentServiceImpl implements ReviewAttachmentService {
     ) {
         String extension = "";
         int extensionIndex = originalFilename.lastIndexOf('.');
-
-        if (
-                extensionIndex > 0
-                        && extensionIndex
-                        < originalFilename.length() - 1
-        ) {
+        if (extensionIndex > 0 && extensionIndex < originalFilename.length() - 1) {
             extension = originalFilename.substring(extensionIndex).toLowerCase();
         }
 
-        return "reviews/"
-                + reviewId
-                + "/"
-                + UUID.randomUUID()
-                + extension;
+        return "reviews/" + reviewId + "/" + UUID.randomUUID() + extension;
     }
 }
